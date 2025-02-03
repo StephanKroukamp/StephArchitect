@@ -1,0 +1,37 @@
+﻿<#@ template language="C#" #>
+<#@ output extension=".cs" #>
+
+<#@ parameter name="ProjectName" type="System.String" #>
+
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
+
+namespace <#= ProjectName #>.Persistence;
+
+public class <#= ProjectName #>DbContextFactory : IDesignTimeDbContextFactory<<#= ProjectName #>DbContext>
+{
+    public <#= ProjectName #>DbContext CreateDbContext(string[] args)
+    {
+        var config = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .Build();
+
+        string connectionString = config.GetConnectionString("DefaultConnection");
+
+        var optionsBuilder = new DbContextOptionsBuilder<<#= ProjectName #>DbContext>();
+        
+        optionsBuilder.UseSqlServer(connectionString);
+
+        return new <#= ProjectName #>DbContext(optionsBuilder.Options);
+    }
+}
+
+public class <#= ProjectName #>DbContext(DbContextOptions<<#= ProjectName #>DbContext> options) : DbContext(options)
+{
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(DependencyInjection).Assembly);
+    }
+}

@@ -1,0 +1,22 @@
+﻿<#@ template language="C#" #>
+<#@ output extension=".csproj" #>
+
+<#@ parameter name="ProjectName" type="System.String" #>
+
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.1" />
+        <PackageReference Include="Refit" Version="8.0.0" />
+        <PackageReference Include="Refit.HttpClientFactory" Version="8.0.0" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <ProjectReference Include="..\<#= ProjectName #>.Application\<#= ProjectName #>.Application.csproj" />
+    </ItemGroup>
+</Project>

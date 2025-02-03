@@ -1,0 +1,26 @@
+﻿<#@ template language="C#" #>
+<#@ output extension=".cs" #>
+
+<#@ assembly name="StephArchitect" #>
+
+<#@ import namespace="StephArchitect" #>
+<#@ import namespace="System.Linq" #>
+
+<#@ parameter name="ProjectName" type="System.String" #>
+<#@ parameter name="Entity" type="StephArchitect.Entity" #>
+
+using MediatR;
+using <#= ProjectName #>.Domain.<#= Entity.Name.Pluralize() #>;
+
+namespace <#= ProjectName #>.Application.Commands
+{
+    public record Create<#= Entity.Name #>Command(<#= string.Join(", ", Entity.Properties.Select(p => p.Type + " " + p.Name)) #>) : IRequest<<#= Entity.Name #>>;
+
+    public class Create<#= Entity.Name #>CommandHandler : IRequestHandler<Create<#= Entity.Name #>Command, <#= Entity.Name #>>
+    {
+        public Task<<#= Entity.Name #>> Handle(Create<#= Entity.Name #>Command request, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException("Handle logic for Create<#= Entity.Name #>Command is not implemented yet.");
+        }
+    }
+}

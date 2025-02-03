@@ -1,0 +1,26 @@
+﻿<#@ template language="C#" #>
+<#@ output extension=".cs" #>
+
+<#@ assembly name="StephArchitect" #>
+
+<#@ import namespace="StephArchitect" #>
+<#@ import namespace="System.Linq" #>
+
+<#@ parameter name="ProjectName" type="System.String" #>
+<#@ parameter name="Entity" type="StephArchitect.Entity" #>
+
+using MediatR;
+using <#= ProjectName #>.Domain.<#= Entity.Name.Pluralize() #>;
+
+namespace <#= ProjectName #>.Application.Queries
+{
+    public record Get<#= Entity.Name #>ByIdQuery(<#= string.Join(", ", Entity.Properties.Select(p => p.Type + " " + p.Name)) #>) : IRequest<<#= Entity.Name #>>;
+
+    public class Get<#= Entity.Name #>ByIdHandler : IRequestHandler<Get<#= Entity.Name #>ByIdQuery, <#= Entity.Name #>>
+    {
+        public Task<<#= Entity.Name #>> Handle(Get<#= Entity.Name #>ByIdQuery request, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException("Handle logic for Get<#= Entity.Name #>ByIdQuery is not implemented yet.");
+        }
+    }
+}

@@ -1,0 +1,52 @@
+﻿<#@ template language="C#" #>
+    <#@ output extension=".cs" #>
+    <#@ parameter name="ProjectName" type="System.String" #>
+using Microsoft.OpenApi.Models;
+using <#= ProjectName #>.Application;
+using <#= ProjectName #>.Infrastructure;
+
+var builder = WebApplication.CreateBuilder(args);
+
+var configuration = builder.Configuration;
+
+builder.Services.AddApplication();
+
+builder.Services.AddInfrastructure(configuration);
+
+builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = $"<#= ProjectName #> Api- {Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}",
+        Description = "An ASP.NET Core Web API by yaaaaa boooi",
+        TermsOfService = new Uri("https://example.com/terms"),
+        Contact = new OpenApiContact
+        {
+            Name = "Example Contact",
+            Url = new Uri("https://example.com/contact")
+        },
+        License = new OpenApiLicense
+        {
+            Name = "Example License",
+            Url = new Uri("https://example.com/license")
+        }
+    });
+});
+
+var app = builder.Build();
+
+// TODO: Map endpoints for each domain entity
+
+app.UseSwagger();
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "<#= ProjectName #> API V1");
+    options.RoutePrefix = "swagger"; // Ensures Swagger UI is at /swagger
+});
+
+app.UseHttpsRedirection();
+
+app.Run();

@@ -1,0 +1,86 @@
+﻿[
+  {
+    "Name": "User",
+    "Properties": [
+      { "Name": "Id", "Type": "long", "PrimaryKey": true },
+      { "Name": "Name", "Type": "string" },
+      { "Name": "Email", "Type": "string" }
+    ],
+    "Relationships": [
+      { "Type": "OneToMany", "Target": "Order", "ForeignKey": "UserId" },
+      { "Type": "OneToOne", "Target": "UserProfile", "ForeignKey": "UserId" },
+      { "Type": "ManyToMany", "Target": "Role", "Through": "UserRole" }
+    ]
+  },
+  {
+    "Name": "UserProfile",
+    "Properties": [
+      { "Name": "Id", "Type": "long", "PrimaryKey": true },
+      { "Name": "Address", "Type": "string" },
+      { "Name": "PhoneNumber", "Type": "string" },
+      { "Name": "UserId", "Type": "long" }
+    ],
+    "Relationships": [
+      { "Type": "OneToOne", "Target": "User", "ForeignKey": "UserId" }
+    ]
+  },
+  {
+    "Name": "Order",
+    "Properties": [
+      { "Name": "Id", "Type": "long", "PrimaryKey": true },
+      { "Name": "OrderDate", "Type": "DateTime" },
+      { "Name": "UserId", "Type": "long" }
+    ],
+    "Relationships": [
+      { "Type": "ManyToOne", "Target": "User", "ForeignKey": "UserId" },
+      { "Type": "OneToMany", "Target": "OrderItem", "ForeignKey": "OrderId" }
+    ]
+  },
+  {
+    "Name": "Product",
+    "Properties": [
+      { "Name": "Id", "Type": "long", "PrimaryKey": true },
+      { "Name": "Name", "Type": "string" },
+      { "Name": "Price", "Type": "decimal" }
+    ],
+    "Relationships": [
+      { "Type": "ManyToMany", "Target": "Order", "Through": "OrderItem" }
+    ]
+  },
+  {
+    "Name": "OrderItem",
+    "Properties": [
+      { "Name": "Id", "Type": "long", "PrimaryKey": true },
+      { "Name": "OrderId", "Type": "long" },
+      { "Name": "ProductId", "Type": "long" },
+      { "Name": "Quantity", "Type": "int" },
+      { "Name": "Price", "Type": "decimal" }
+    ],
+    "Relationships": [
+      { "Type": "ManyToOne", "Target": "Order", "ForeignKey": "OrderId" },
+      { "Type": "ManyToOne", "Target": "Product", "ForeignKey": "ProductId" }
+    ]
+  },
+  {
+    "Name": "Role",
+    "Properties": [
+      { "Name": "Id", "Type": "long", "PrimaryKey": true },
+      { "Name": "Name", "Type": "string" }
+    ],
+    "Relationships": [
+      { "Type": "ManyToMany", "Target": "User", "Through": "UserRole" }
+    ]
+  },
+  {
+    "Name": "UserRole",
+    "Properties": [
+      { "Name": "Id", "Type": "long", "PrimaryKey": true },
+      { "Name": "UserId", "Type": "long" },
+      { "Name": "RoleId", "Type": "long" }
+    ],
+    "Relationships": [
+      { "Type": "ManyToOne", "Target": "User", "ForeignKey": "UserId" },
+      { "Type": "ManyToOne", "Target": "Role", "ForeignKey": "RoleId" }
+    ]
+  }
+]

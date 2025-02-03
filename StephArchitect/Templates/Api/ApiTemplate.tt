@@ -1,0 +1,44 @@
+﻿<#@ template language="C#" debug="false" hostspecific="true" #>
+    <#@ output extension=".cs" #>
+    <#@ parameter name="ProjectName" type="System.String" #>
+    <#@ parameter name="EntityName" type="System.String" #>
+    <#@ parameter name="PluralEntityName" type="System.String" #>
+
+using MediatR;
+using <#= ProjectName #>.Application.Commands;
+using <#= ProjectName #>.Domain.<#= PluralEntityName #>;
+
+namespace <#= ProjectName #>.Api.Endpoints
+{
+public static class <#= EntityName #>Endpoints
+{
+    public static void Map<#= EntityName #>Endpoints(this WebApplication app)
+    {
+        app.MapPost("/<#= EntityName.ToLower() #>", async (Create<#= EntityName #>Command command, IMediator mediator) =>
+        {
+            var result = await mediator.Send(command);
+            return Results.Created($"/<#= EntityName.ToLower() #>/{result.Id}", result);
+        });
+
+        app.MapGet("/<#= EntityName.ToLower() #>", () =>
+        {
+            return Results.Ok("GET all <#= EntityName #>s");
+        });
+
+        app.MapGet("/<#= EntityName.ToLower() #>/{id}", (int id) =>
+        {
+            return Results.Ok($"GET <#= EntityName #> with id: {id}");
+        });
+
+        app.MapPut("/<#= EntityName.ToLower() #>/{id}", (int id, <#= EntityName #> updatedEntity) =>
+        {
+            return Results.Ok($"Updated <#= EntityName #> with id: {id}");
+        });
+
+        app.MapDelete("/<#= EntityName.ToLower() #>/{id}", (int id) =>
+        {
+            return Results.Ok($"Deleted <#= EntityName #> with id: {id}");
+        });
+    }
+}
+}
