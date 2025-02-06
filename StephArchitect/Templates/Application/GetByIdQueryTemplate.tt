@@ -18,6 +18,7 @@ namespace <#= ProjectName #>.Application.Queries
 
     public class Get<#= Entity.Name #>ByIdHandler : IRequestHandler<Get<#= Entity.Name #>ByIdQuery, <#= Entity.Name #>>
     {
+        // Keep:
         public Task<<#= Entity.Name #>> Handle(Get<#= Entity.Name #>ByIdQuery request, CancellationToken cancellationToken)
         {
             throw new NotImplementedException("Handle logic for Get<#= Entity.Name #>ByIdQuery is not implemented yet.");

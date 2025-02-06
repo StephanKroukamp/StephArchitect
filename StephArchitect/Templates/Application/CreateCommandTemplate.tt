@@ -18,6 +18,7 @@ namespace <#= ProjectName #>.Application.Commands
 
     public class Create<#= Entity.Name #>CommandHandler : IRequestHandler<Create<#= Entity.Name #>Command, <#= Entity.Name #>>
     {
+        // Keep:
         public Task<<#= Entity.Name #>> Handle(Create<#= Entity.Name #>Command request, CancellationToken cancellationToken)
         {
             throw new NotImplementedException("Handle logic for Create<#= Entity.Name #>Command is not implemented yet.");

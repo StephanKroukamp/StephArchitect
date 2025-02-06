@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Text.RegularExpressions;
 using Mono.TextTemplating;
 using Newtonsoft.Json;
 using DiffMatchPatch;
@@ -8,7 +9,7 @@ namespace StephArchitect;
 public class ProjectGenerator(string ProjectName, string BaseOutputPath, string JsonFilePath)
 {
     private readonly string _templateDirectory = SetTemplateDirectory();
-    
+
     private Manifest? Manifest { get; set; }
 
     private List<Entity> _entities = [];
@@ -27,6 +28,17 @@ public class ProjectGenerator(string ProjectName, string BaseOutputPath, string 
         Manifest = await LoadManifestFiles();
 
         CreateBaseDirectoryStructure();
+
+        // await GenerateDomainLayer();
+        // await GenerateContractsLayer();
+        // await GenerateApplicationLayer();
+        // await GenerateApiLayer();
+        // await GeneratePersistenceLayer();
+        // await GenerateInfrastructureLayer();
+        // await GenerateProgramFile();
+        // await GenerateSolutionFile();
+        // await GenerateGlobalJsonFile();
+        // await GenerateReadmeFile();
 
         await Task.WhenAll([
             GenerateDomainLayer(),
@@ -101,7 +113,7 @@ public class ProjectGenerator(string ProjectName, string BaseOutputPath, string 
         {
             Files = Directory
                 .GetFiles(BaseOutputPath, "*", SearchOption.AllDirectories)
-                .Select(path => new ManifestFile(path, ComputeFileHash(File.ReadAllText(path)), DateTimeOffset.Now))
+                .Select(path => new ManifestFile(path, DateTimeOffset.Now))
                 .ToList()
         };
 
@@ -341,16 +353,6 @@ public class ProjectGenerator(string ProjectName, string BaseOutputPath, string 
 
         try
         {
-            var oldHash = string.Empty;
-
-            if (Manifest is not null)
-            {
-                oldHash = Manifest.Files
-                    .FirstOrDefault(x => x.Path == outputPath)
-                    ?.Hash;
-            }
-
-
             if (sessionValues != null)
             {
                 foreach (var (key, value) in sessionValues)
@@ -364,9 +366,8 @@ public class ProjectGenerator(string ProjectName, string BaseOutputPath, string 
             var settings = TemplatingEngine.GetSettings(templateGenerator, parsed);
             settings.CompilerOptions = "-nullable:enable";
 
-            var (generatedFilename, newContent) = await templateGenerator.ProcessTemplateAsync(
-                parsed, templatePath, "", outputPath, settings
-            );
+            var (newFilename, newCode) = await templateGenerator
+                .ProcessTemplateAsync(parsed, templatePath, "", outputPath, settings);
 
             if (templateGenerator.Errors.HasErrors)
             {
@@ -377,32 +378,59 @@ public class ProjectGenerator(string ProjectName, string BaseOutputPath, string 
 
                 throw new Exception("Failed to process the T4 template.");
             }
-
-            if (!string.IsNullOrWhiteSpace(oldHash))
+            
+            // at this point we have the newly generated code
+            var previousFile = Manifest?.Files.FirstOrDefault(x => x.Path == outputPath);
+            
+            // if the file was not created before, write the new file
+            if (previousFile is null)
             {
-                var newHash = ComputeFileHash(newContent);
-
-                if (oldHash == newHash)
-                {
-                    return;
-                }
-
-                var oldContent = await File.ReadAllTextAsync(outputPath);
-
-                if (outputPath.EndsWith(".sln"))
-                {
-                    // TODO: since the solution uses guids for the project, we need to track this in the manifest file somehow
-                    return;
-                }
-
-                PrintDifferencesBetweenFiles(oldContent, newContent);
-
-                Manifest!.Files
-                    .First(x => x.Path == outputPath)
-                    .Hash = newHash;
+                await File.WriteAllTextAsync(newFilename, newCode);
+                
+                return;
             }
 
-            await File.WriteAllTextAsync(generatedFilename, newContent);
+            // TODO: since the solution uses guids for the project, we need to track this in the manifest file somehow
+            if (outputPath.EndsWith(".sln"))
+            {
+                return;
+            }
+            
+            // if the file was created before, check if the old and new hashes are the same
+            var previousCode = await File.ReadAllTextAsync(previousFile.Path);
+
+            // if they are the same, no need to write new file
+            if (ComputeFileHash(previousCode) == ComputeFileHash(newCode))
+            {
+                return;
+            }
+            
+            // if there are no keep comments, write the new file
+            if (!previousCode.Contains("Keep:"))
+            {
+                PrintDifferencesBetweenFiles(previousCode, newCode);
+                
+                await File.WriteAllTextAsync(newFilename, newCode);
+                
+                return;
+            }
+
+            // if there are keep comments, pull the keep code from the old code, merge back the code that has to be kept, write the new file
+            var pattern =
+                @"\s*//\s*Keep:\s*\r?\n\s*(public|private|protected|internal|static|\s)+\s*(async\s+)?\S+\s+\S+\s*\(.*?\)\s*\{.*?\}";
+
+            var matches = Regex.Matches(previousCode, pattern, RegexOptions.Singleline)
+                .Select(m => m.Value)
+                .ToList();
+
+            foreach (var match in matches)
+            {
+                newCode = Regex.Replace(newCode, pattern, match, RegexOptions.Singleline);
+            }
+
+            PrintDifferencesBetweenFiles(previousCode, newCode);
+            
+            await File.WriteAllTextAsync(newFilename, newCode);
         }
         finally
         {

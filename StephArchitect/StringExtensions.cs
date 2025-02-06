@@ -20,7 +20,6 @@ public static class StringExtensions
             case "foot": return "feet";
             case "mouse": return "mice";
             case "goose": return "geese";
-            default: break;
         }
 
         // Words ending in "y" preceded by a consonant -> replace "y" with "ies"
