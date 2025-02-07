@@ -113,7 +113,6 @@ public class ProjectGenerator(string ProjectName, string BaseOutputPath, string 
         {
             Files = Directory
                 .GetFiles(BaseOutputPath, "*", SearchOption.AllDirectories)
-                .Select(path => new ManifestFile(path, DateTimeOffset.Now))
                 .ToList()
         };
 
@@ -231,6 +230,11 @@ public class ProjectGenerator(string ProjectName, string BaseOutputPath, string 
         await GenerateTemplate(
             Path.Combine(_templateDirectory, "Application", "ApplicationDependencyInjectionFileTemplate.tt"),
             Path.Combine(path, "DependencyInjection.cs"),
+            new Dictionary<string, object> { { "ProjectName", ProjectName } });
+        
+        await GenerateTemplate(
+            Path.Combine(_templateDirectory, "Application", "IDbContextTemplate.tt"),
+            Path.Combine(path, "IDbContextTemplate.cs"),
             new Dictionary<string, object> { { "ProjectName", ProjectName } });
     }
 
@@ -380,10 +384,10 @@ public class ProjectGenerator(string ProjectName, string BaseOutputPath, string 
             }
             
             // at this point we have the newly generated code
-            var previousFile = Manifest?.Files.FirstOrDefault(x => x.Path == outputPath);
+            var oldFilePath = Manifest?.Files.FirstOrDefault(path => path == outputPath);
             
             // if the file was not created before, write the new file
-            if (previousFile is null)
+            if (oldFilePath is null)
             {
                 await File.WriteAllTextAsync(newFilename, newCode);
                 
@@ -397,18 +401,18 @@ public class ProjectGenerator(string ProjectName, string BaseOutputPath, string 
             }
             
             // if the file was created before, check if the old and new hashes are the same
-            var previousCode = await File.ReadAllTextAsync(previousFile.Path);
+            var oldCode = await File.ReadAllTextAsync(oldFilePath);
 
             // if they are the same, no need to write new file
-            if (ComputeFileHash(previousCode) == ComputeFileHash(newCode))
+            if (ComputeFileHash(oldCode) == ComputeFileHash(newCode))
             {
                 return;
             }
             
             // if there are no keep comments, write the new file
-            if (!previousCode.Contains("Keep:"))
+            if (!oldCode.Contains("Keep:"))
             {
-                PrintDifferencesBetweenFiles(previousCode, newCode);
+                PrintDifferencesBetweenFiles(oldCode, newCode);
                 
                 await File.WriteAllTextAsync(newFilename, newCode);
                 
@@ -419,7 +423,7 @@ public class ProjectGenerator(string ProjectName, string BaseOutputPath, string 
             var pattern =
                 @"\s*//\s*Keep:\s*\r?\n\s*(public|private|protected|internal|static|\s)+\s*(async\s+)?\S+\s+\S+\s*\(.*?\)\s*\{.*?\}";
 
-            var matches = Regex.Matches(previousCode, pattern, RegexOptions.Singleline)
+            var matches = Regex.Matches(oldCode, pattern, RegexOptions.Singleline)
                 .Select(m => m.Value)
                 .ToList();
 
@@ -428,7 +432,7 @@ public class ProjectGenerator(string ProjectName, string BaseOutputPath, string 
                 newCode = Regex.Replace(newCode, pattern, match, RegexOptions.Singleline);
             }
 
-            PrintDifferencesBetweenFiles(previousCode, newCode);
+            PrintDifferencesBetweenFiles(oldCode, newCode);
             
             await File.WriteAllTextAsync(newFilename, newCode);
         }

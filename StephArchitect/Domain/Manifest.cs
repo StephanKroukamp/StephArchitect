@@ -2,5 +2,5 @@
 
 public record Manifest
 {
-    public List<ManifestFile> Files { get; set; } = [];
+    public List<string> Files { get; set; } = [];
 }
