@@ -1,6 +1,5 @@
 ﻿<#@ template language="C#" #>
 <#@ output extension=".csproj" #>
-
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>

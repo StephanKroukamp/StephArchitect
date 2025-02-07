@@ -6,9 +6,8 @@
 <#@ parameter name="ProjectName" type="System.String" #>
 <#@ parameter name="Entity" type="StephArchitect.Entity" #>
 using <#= ProjectName #>.Domain.<#= Entity.Name.Pluralize() #>;
-using <#= ProjectName #>.Application;
 
-namespace <#= ProjectName #>.Domain.<#= Entity.Name.Pluralize() #>;
+namespace <#= ProjectName #>.Application.<#= Entity.Name.Pluralize() #>;
 
 public interface I<#= Entity.Name #>Repository : IRepository<<#= Entity.Name #>>
 {

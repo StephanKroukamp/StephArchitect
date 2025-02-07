@@ -18,19 +18,19 @@ using <#= ProjectName #>.Domain.<#= Entity.Name.Pluralize() #>;
         if (Entity.Name == relationship.Left)
         {
 #>
-        using <#= ProjectName #>.Domain.<#= relationship.Right.Pluralize() #>;
+using <#= ProjectName #>.Domain.<#= relationship.Right.Pluralize() #>;
         <#
         }
         else if (Entity.Name == relationship.Right)
         {
 #>
-        using <#= ProjectName #>.Domain.<#= relationship.Left.Pluralize() #>;
+using <#= ProjectName #>.Domain.<#= relationship.Left.Pluralize() #>;
         <#
         }
     }
 #>
 
-namespace <#= ProjectName #>.Persistence.Configurations;
+namespace <#= ProjectName #>.Persistence.<#= Entity.Name.Pluralize() #>;
 
 public class <#= Entity.Name #>Configuration : IEntityTypeConfiguration<<#= Entity.Name #>>
 {

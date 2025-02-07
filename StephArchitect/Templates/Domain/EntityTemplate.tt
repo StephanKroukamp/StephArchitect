@@ -8,21 +8,20 @@
 <#@ parameter name="ProjectName" type="System.String" #>
 <#@ parameter name="Entity" type="StephArchitect.Entity" #>
 <#@ parameter name="Relationships" type="List<StephArchitect.Relationship>" #>
-
 <#
     foreach (var relationship in Relationships)
     {
         if (Entity.Name == relationship.Left)
         {
 #>
-        using <#= ProjectName #>.Domain.<#= relationship.Right.Pluralize() #>;
-        <#
+using <#= ProjectName #>.Domain.<#= relationship.Right.Pluralize() #>;
+<#
         }
         else if (Entity.Name == relationship.Right)
         {
 #>
-        using <#= ProjectName #>.Domain.<#= relationship.Left.Pluralize() #>;
-        <#
+using <#= ProjectName #>.Domain.<#= relationship.Left.Pluralize() #>;
+<#
         }
     }
 #>
@@ -31,52 +30,50 @@ namespace <#= ProjectName #>.Domain.<#= Entity.Name.Pluralize() #>;
 
 public class <#= Entity.Name #> : IEntity
 {
-    public <#=
-                Entity.Properties.First(p => p.PrimaryKey).Type #> <#=
-                Entity.Properties.First(p => p.PrimaryKey).Name #> { get; set; }
+    public <#= Entity.Properties.First(p => p.PrimaryKey).Type #> <#= Entity.Properties.First(p => p.PrimaryKey).Name #> { get; set; }
 
-        <#
-    foreach (var prop in Entity.Properties.Where(p => !p.PrimaryKey))
-    {
+<#
+foreach (var prop in Entity.Properties.Where(p => !p.PrimaryKey))
+{
 #>
     public <#= prop.Type #> <#= prop.Name #> { get; set; }
-        <#
+<#
 }
 #>
 
-        <#
-    foreach (var rel in Relationships.Where(r => r.Left == Entity.Name || r.Right == Entity.Name))
+<#
+foreach (var rel in Relationships.Where(r => r.Left == Entity.Name || r.Right == Entity.Name))
+{
+    if (rel.Type == RelationshipType.OneToOne && rel.Left == Entity.Name)
     {
-        if (rel.Type == RelationshipType.OneToOne && rel.Left == Entity.Name)
-        {
 #>
-        public <#= rel.Right #> <#= rel.Right #> { get; set; }
-        <#
-        }
-        else if (rel.Type == RelationshipType.OneToOne && rel.Right == Entity.Name)
-        {
-#>
-        public <#= rel.Left #> <#= rel.Left #> { get; set; }
-        <#
-        }
-        else if (rel.Type == RelationshipType.OneToMany && rel.Left == Entity.Name)
-        {
-#>
-        public ICollection<<#= rel.Right #>> <#= rel.Right.Pluralize() #> { get; set; } = new List<<#= rel.Right #>>();
-        <#
-        }
-        else if (rel.Type == RelationshipType.OneToMany && rel.Right == Entity.Name)
-        {
-#>
-        public <#= rel.Left #> <#= rel.Left #> { get; set; }
-        <#
-        }
-        else if (rel.Type == RelationshipType.ManyToMany)
-        {
-#>
-        public ICollection<<#= rel.Right #>> <#= rel.Right.Pluralize() #> { get; set; } = new List<<#= rel.Right #>>();
-        <#
-        }
+    public <#= rel.Right #> <#= rel.Right #> { get; set; }
+<#
     }
+    else if (rel.Type == RelationshipType.OneToOne && rel.Right == Entity.Name)
+    {
 #>
+    public <#= rel.Left #> <#= rel.Left #> { get; set; }
+<#
     }
+    else if (rel.Type == RelationshipType.OneToMany && rel.Left == Entity.Name)
+    {
+#>
+    public ICollection<<#= rel.Right #>> <#= rel.Right.Pluralize() #> { get; set; } = new List<<#= rel.Right #>>();
+<#
+    }
+    else if (rel.Type == RelationshipType.OneToMany && rel.Right == Entity.Name)
+    {
+#>
+    public <#= rel.Left #> <#= rel.Left #> { get; set; }
+<#
+    }
+    else if (rel.Type == RelationshipType.ManyToMany)
+    {
+#>
+    public ICollection<<#= rel.Right #>> <#= rel.Right.Pluralize() #> { get; set; } = new List<<#= rel.Right #>>();
+<#
+    }
+}
+#>
+}
