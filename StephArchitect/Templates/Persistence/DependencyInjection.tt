@@ -1,9 +1,24 @@
 ﻿<#@ template language="C#" #>
 <#@ output extension=".cs" #>
+<#@ assembly name="StephArchitect" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="StephArchitect" #>
 <#@ parameter name="ProjectName" type="System.String" #>
+<#@ parameter name="Entities" type="List<StephArchitect.Entity>" #>
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+<#
+    foreach (var entity in Entities)
+    {
+        #>
+using <#= ProjectName #>.Application.<#= entity.Name.Pluralize() #>;
+using <#= ProjectName #>.Persistence.<#= entity.Name.Pluralize() #>;
+<#
+    }
+#>
 
 namespace <#= ProjectName #>.Persistence;
 
@@ -19,5 +34,10 @@ public static class DependencyInjection
             {
             });
         });
+<#
+    foreach (var entity in Entities)
+    {#>
+        services.AddScoped<I<#= entity.Name#>Repository, <#= entity.Name#>Repository>();        
+    <#}#>
     }
 }

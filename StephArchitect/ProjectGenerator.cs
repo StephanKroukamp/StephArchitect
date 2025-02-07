@@ -58,6 +58,8 @@ public class ProjectGenerator(string ProjectName, string BaseOutputPath, string 
         PrintGenerationSummary();
 
         RestoreNugetPackages();
+
+        EfMigrationHelper.RunEfMigrations(ProjectName, BaseOutputPath);
     }
 
     private void RestoreNugetPackages()
@@ -335,7 +337,7 @@ public class ProjectGenerator(string ProjectName, string BaseOutputPath, string 
         await GenerateTemplate(
             Path.Combine(_templateDirectory, "Persistence", "DependencyInjection.tt"),
             Path.Combine(path, "DependencyInjection.cs"),
-            new Dictionary<string, object> { { "ProjectName", ProjectName } });
+            new Dictionary<string, object> { { "ProjectName", ProjectName }, { "Entities", _entities } });
     }
 
     private async Task GenerateInfrastructureLayer()
@@ -358,7 +360,7 @@ public class ProjectGenerator(string ProjectName, string BaseOutputPath, string 
         await GenerateTemplate(
             Path.Combine(_templateDirectory, "Api", "Program.tt"),
             Path.Combine(BaseOutputPath, $"{ProjectName}.Api", "Program.cs"),
-            new Dictionary<string, object> { { "ProjectName", ProjectName } });
+            new Dictionary<string, object> { { "ProjectName", ProjectName }, { "Entities", _entities } });
     }
 
     private async Task GenerateSolutionFile()

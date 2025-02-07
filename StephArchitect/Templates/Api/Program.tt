@@ -1,9 +1,24 @@
 ﻿<#@ template language="C#" #>
 <#@ output extension=".cs" #>
+<#@ assembly name="StephArchitect" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="StephArchitect" #>
 <#@ parameter name="ProjectName" type="System.String" #>
+<#@ parameter name="Entities" type="List<StephArchitect.Entity>" #>
 using Microsoft.OpenApi.Models;
 using <#= ProjectName #>.Application;
 using <#= ProjectName #>.Infrastructure;
+using <#= ProjectName #>.Persistence;
+<#
+    foreach (var entity in Entities)
+    {
+        #>
+using <#= ProjectName #>.Api.<#= entity.Name.Pluralize() #>;
+<#
+    }
+#>
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +27,8 @@ var configuration = builder.Configuration;
 builder.Services.AddApplication();
 
 builder.Services.AddInfrastructure(configuration);
+
+builder.Services.AddPersistence(configuration);
 
 builder.Services.AddEndpointsApiExplorer();
 
@@ -38,7 +55,14 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
-// TODO: Map endpoints for each domain entity
+<#
+    foreach (var entity in Entities)
+    {
+        #>
+app.Map<#= entity.Name#>Endpoints();
+        <#
+    }
+#>
 
 app.UseSwagger();
 app.UseSwaggerUI(options =>
