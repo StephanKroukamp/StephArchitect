@@ -16,7 +16,8 @@ public class <#= ProjectName #>DbContextFactory : IDesignTimeDbContextFactory<<#
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
             .Build();
 
-        string connectionString = config.GetConnectionString("DefaultConnection");
+        var connectionString = config.GetConnectionString("DefaultConnection")
+            ?? throw new ArgumentException("Db connection string is not set");
 
         var optionsBuilder = new DbContextOptionsBuilder<<#= ProjectName #>DbContext>();
         

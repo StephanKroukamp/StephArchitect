@@ -17,6 +17,7 @@ public static class <#= EntityName #>Endpoints
         app.MapPost("/<#= EntityName.ToLower() #>", async (Create<#= EntityName #>Command command, IMediator mediator) =>
         {
             var result = await mediator.Send(command);
+
             return Results.Created($"/<#= EntityName.ToLower() #>/{result.Id}", result);
         });
 
@@ -25,9 +26,11 @@ public static class <#= EntityName #>Endpoints
             return Results.Ok("GET all <#= EntityName #>s");
         });
 
-        app.MapGet("/<#= EntityName.ToLower() #>/{id}", (int id) =>
+        app.MapGet("/<#= EntityName.ToLower() #>/{id}", async (int id, IMediator mediator) =>
         {
-            return Results.Ok($"GET <#= EntityName #> with id: {id}");
+            var result = await mediator.Send(new Get<#= EntityName #>ByIdQuery(id));
+
+            return Results.Ok(result);
         });
 
         app.MapPut("/<#= EntityName.ToLower() #>/{id}", (int id, <#= EntityName #> updatedEntity) =>
