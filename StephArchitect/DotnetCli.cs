@@ -2,8 +2,15 @@ using System.Diagnostics;
 
 namespace StephArchitect;
 
-public class DotnetCliHelper
+public class DotnetCli
 {
+    public static void RestoreNugetPackages(string baseOutputPath)
+    {
+        var restoreCommand = $"restore \"{baseOutputPath}\" --verbosity quiet";
+
+        ExecuteDotnetCommand(restoreCommand, baseOutputPath);
+    }
+    
     public static void AddNewMigration(string projectName, string baseOutputPath)
     {
         var migrationCommand =
@@ -25,13 +32,6 @@ public class DotnetCliHelper
             $"--configuration Debug initialize_migrations";
 
         ExecuteDotnetCommand(updateCommand, baseOutputPath);
-    }
-
-    public static void RestoreNugetPackages(string baseOutputPath)
-    {
-        var restoreCommand = $"restore \"{baseOutputPath}\" --verbosity quiet";
-
-        ExecuteDotnetCommand(restoreCommand, baseOutputPath);
     }
 
     private static void ExecuteDotnetCommand(string arguments, string workingDirectory)
