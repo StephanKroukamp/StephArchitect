@@ -1,0 +1,32 @@
+﻿<#@ template language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="StephArchitect" #>
+<#@ import namespace="StephArchitect" #>
+<#@ import namespace="System.Linq" #>
+<#@ parameter name="ProjectName" type="System.String" #>
+<#@ parameter name="Entity" type="StephArchitect.Entity" #>
+using MediatR;
+using <#= ProjectName #>.Domain.<#= Entity.Name.Pluralize() #>;
+
+namespace <#= ProjectName #>.Application.<#= Entity.Name.Pluralize() #>.Commands;
+
+public record Delete<#= Entity.Name #>ByIdCommand(<#= string.Join(", ", Entity.Properties.Where(p => p.Name.Equals("Id")).Select(p => p.Type + " " + p.Name)) #>) : IRequest<<#= Entity.Name #>?>;
+
+public class Delete<#= Entity.Name #>ByIdCommandHandler(I<#= Entity.Name #>Repository <#= Entity.Name.ToLower() #>Repository) : IRequestHandler<Delete<#= Entity.Name #>ByIdCommand, <#= Entity.Name #>?>
+{
+    public async Task<<#= Entity.Name #>?> Handle(Delete<#= Entity.Name #>ByIdCommand request, CancellationToken cancellationToken)
+    {
+        var <#= Entity.Name.ToLower() #> = await <#= Entity.Name.ToLower() #>Repository.GetByIdAsync(request.Id, cancellationToken);
+
+        if (<#= Entity.Name.ToLower() #> is null)
+        {
+            return null;
+        }
+
+        <#= Entity.Name.ToLower() #>Repository.Remove(<#= Entity.Name.ToLower() #>);
+
+        await <#= Entity.Name.ToLower() #>Repository.SaveChangesAsync(cancellationToken);
+
+        return <#= Entity.Name.ToLower() #>;
+    }
+}

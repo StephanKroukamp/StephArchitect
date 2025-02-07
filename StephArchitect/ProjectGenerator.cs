@@ -198,6 +198,11 @@ public class ProjectGenerator(string projectName, string baseOutputPath, string 
                 new Dictionary<string, object> { { "ProjectName", projectName }, { "Entity", entity } });
             
             await GenerateTemplate(
+                Path.Combine(_templateDirectory, "Application", "Commands", "DeleteEntityByIdCommand.tt"),
+                Path.Combine(path, entity.Name.Pluralize(), "Commands", $"Delete{entity.Name}ByIdCommand.cs"),
+                new Dictionary<string, object> { { "ProjectName", projectName }, { "Entity", entity } });
+            
+            await GenerateTemplate(
                 Path.Combine(_templateDirectory, "Application", "Commands", "UpdateEntityCommand.tt"),
                 Path.Combine(path, entity.Name.Pluralize(), "Commands", $"Update{entity.Name}Command.cs"),
                 new Dictionary<string, object> { { "ProjectName", projectName }, { "Entity", entity } });

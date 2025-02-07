@@ -58,6 +58,15 @@ public static class <#= EntityName #>Endpoints
         return Results.Ok(result);
     }
 
-    private static Results<Ok<string>, NotFound> Delete<#= EntityName #>ById() =>
-        TypedResults.Ok("");
+    private static async Task<IResult> Delete<#= EntityName #>ById(int id, IMediator mediator)
+    {
+        var result = await mediator.Send(new Delete<#= EntityName #>ByIdCommand(id));
+        
+        if (result is null)
+        {
+            return Results.NotFound(id);
+        }
+
+        return Results.NoContent();
+    }
 }
