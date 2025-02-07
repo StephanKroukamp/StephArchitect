@@ -2,7 +2,7 @@ using System.Diagnostics;
 
 namespace StephArchitect;
 
-public class DotnetCli
+public static class DotnetCli
 {
     public static void RestoreNugetPackages(string baseOutputPath)
     {
@@ -46,20 +46,22 @@ public class DotnetCli
 
         using var process = Process.Start(processStartInfo);
 
-        if (process == null)
+        if (process is null)
         {
             Console.WriteLine("Failed to start process.");
+            
             return;
         }
 
         var output = process.StandardOutput.ReadToEnd();
-        var error = process.StandardError.ReadToEnd();
-
+        
         if (!string.IsNullOrWhiteSpace(output))
         {
             Console.WriteLine($"Output: {output}");
         }
 
+        var error = process.StandardError.ReadToEnd();
+        
         if (!string.IsNullOrWhiteSpace(error))
         {
             Console.WriteLine($"Error: {error}");

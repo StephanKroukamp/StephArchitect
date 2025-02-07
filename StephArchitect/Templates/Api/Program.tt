@@ -7,10 +7,10 @@
 <#@ import namespace="StephArchitect" #>
 <#@ parameter name="ProjectName" type="System.String" #>
 <#@ parameter name="Entities" type="List<StephArchitect.Entity>" #>
-using Microsoft.OpenApi.Models;
 using <#= ProjectName #>.Application;
 using <#= ProjectName #>.Infrastructure;
 using <#= ProjectName #>.Persistence;
+using Scalar.AspNetCore;
 <#
     foreach (var entity in Entities)
     {
@@ -30,28 +30,7 @@ builder.Services.AddInfrastructure(configuration);
 
 builder.Services.AddPersistence(configuration);
 
-builder.Services.AddEndpointsApiExplorer();
-
-builder.Services.AddSwaggerGen(options =>
-{
-    options.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Version = "v1",
-        Title = $"<#= ProjectName #> Api- {Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}",
-        Description = "An ASP.NET Core Web API by yaaaaa boooi",
-        TermsOfService = new Uri("https://example.com/terms"),
-        Contact = new OpenApiContact
-        {
-            Name = "Example Contact",
-            Url = new Uri("https://example.com/contact")
-        },
-        License = new OpenApiLicense
-        {
-            Name = "Example License",
-            Url = new Uri("https://example.com/license")
-        }
-    });
-});
+builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
@@ -60,16 +39,18 @@ var app = builder.Build();
     {
         #>
 app.Map<#= entity.Name#>Endpoints();
-        <#
+<#
     }
 #>
 
-app.UseSwagger();
-app.UseSwaggerUI(options =>
-{
-    options.SwaggerEndpoint("/swagger/v1/swagger.json", "<#= ProjectName #> API V1");
-    options.RoutePrefix = "swagger"; // Ensures Swagger UI is at /swagger
-});
+app.MapOpenApi();
+    
+    app.MapScalarApiReference();
+    
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/openapi/v1.json", "v1");
+    });
 
 app.UseHttpsRedirection();
 
