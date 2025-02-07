@@ -27,21 +27,21 @@
     }
 #>
 
-namespace <#= ProjectName #>.Domain.<#= Entity.Name.Pluralize() #>
-{
+namespace <#= ProjectName #>.Domain.<#= Entity.Name.Pluralize() #>;
+
 public class <#= Entity.Name #> : IEntity
-    {
-        public <#=
-                    Entity.Properties.First(p => p.PrimaryKey).Type #> <#=
-                    Entity.Properties.First(p => p.PrimaryKey).Name #> { get; set; }
+{
+    public <#=
+                Entity.Properties.First(p => p.PrimaryKey).Type #> <#=
+                Entity.Properties.First(p => p.PrimaryKey).Name #> { get; set; }
 
         <#
     foreach (var prop in Entity.Properties.Where(p => !p.PrimaryKey))
     {
 #>
-        public <#= prop.Type #> <#= prop.Name #> { get; set; }
+    public <#= prop.Type #> <#= prop.Name #> { get; set; }
         <#
-    }
+}
 #>
 
         <#
@@ -80,4 +80,3 @@ public class <#= Entity.Name #> : IEntity
     }
 #>
     }
-}

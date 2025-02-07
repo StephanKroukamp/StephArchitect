@@ -8,7 +8,6 @@
 <#@ parameter name="ProjectName" type="System.String" #>
 <#@ parameter name="Entity" type="StephArchitect.Entity" #>
 <#@ parameter name="Relationships" type="List<StephArchitect.Relationship>" #>
-
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using <#= ProjectName #>.Domain.<#= Entity.Name.Pluralize() #>;
@@ -31,32 +30,31 @@ using <#= ProjectName #>.Domain.<#= Entity.Name.Pluralize() #>;
     }
 #>
 
-namespace <#= ProjectName #>.Persistence.Configurations
+namespace <#= ProjectName #>.Persistence.Configurations;
+
+public class <#= Entity.Name #>Configuration : IEntityTypeConfiguration<<#= Entity.Name #>>
 {
-    public class <#= Entity.Name #>Configuration : IEntityTypeConfiguration<<#= Entity.Name #>>
+    public void Configure(EntityTypeBuilder<<#= Entity.Name #>> builder)
     {
-        public void Configure(EntityTypeBuilder<<#= Entity.Name #>> builder)
-        {
-            builder.HasKey(e => e.<#= Entity.Properties.First(p => p.PrimaryKey).Name #>);
+        builder.HasKey(e => e.<#= Entity.Properties.First(p => p.PrimaryKey).Name #>);
 
-            <# foreach (var prop in Entity.Properties.Where(p => !p.PrimaryKey)) { #>
-            builder.Property(e => e.<#= prop.Name #>).IsRequired();
-            <# } #>
+        <# foreach (var prop in Entity.Properties.Where(p => !p.PrimaryKey)) { #>
+        builder.Property(e => e.<#= prop.Name #>).IsRequired();
+        <# } #>
 
-            <# foreach (var rel in Relationships.Where(r => r.Left == Entity.Name || r.Right == Entity.Name)) {
-                if (rel.Type == RelationshipType.OneToOne && rel.Left == Entity.Name) { #>
-            builder.HasOne(e => e.<#= rel.Right #>)
-                   .WithOne(e => e.<#= rel.Left #>)
-                   .HasForeignKey<<#= rel.Right #>>(e => e.<#= rel.RightId #>);
-            <# } else if (rel.Type == RelationshipType.OneToMany && rel.Left == Entity.Name) { #>
-            builder.HasMany(e => e.<#= rel.Right.Pluralize() #>)
-                   .WithOne(e => e.<#= rel.Left #>)
-                   .HasForeignKey(e => e.<#= rel.RightId #>);
-            <# } else if (rel.Type == RelationshipType.OneToMany && rel.Right == Entity.Name) { #>
-            builder.HasOne(e => e.<#= rel.Left #>)
-                   .WithMany(e => e.<#= rel.Right.Pluralize() #>)
-                   .HasForeignKey(e => e.<#= rel.LeftId #>);
-            <# } } #>
-        }
+        <# foreach (var rel in Relationships.Where(r => r.Left == Entity.Name || r.Right == Entity.Name)) {
+            if (rel.Type == RelationshipType.OneToOne && rel.Left == Entity.Name) { #>
+        builder.HasOne(e => e.<#= rel.Right #>)
+               .WithOne(e => e.<#= rel.Left #>)
+               .HasForeignKey<<#= rel.Right #>>(e => e.<#= rel.RightId #>);
+        <# } else if (rel.Type == RelationshipType.OneToMany && rel.Left == Entity.Name) { #>
+        builder.HasMany(e => e.<#= rel.Right.Pluralize() #>)
+               .WithOne(e => e.<#= rel.Left #>)
+               .HasForeignKey(e => e.<#= rel.RightId #>);
+        <# } else if (rel.Type == RelationshipType.OneToMany && rel.Right == Entity.Name) { #>
+        builder.HasOne(e => e.<#= rel.Left #>)
+               .WithMany(e => e.<#= rel.Right.Pluralize() #>)
+               .HasForeignKey(e => e.<#= rel.LeftId #>);
+        <# } } #>
     }
 }

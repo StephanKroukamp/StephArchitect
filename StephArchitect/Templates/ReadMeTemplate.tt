@@ -1,7 +1,6 @@
 ﻿<#@ template language="C#" #>
-    <#@ output extension=".md" #>
-    <#@ parameter name="ProjectName" type="System.String" #>
-
+<#@ output extension=".md" #>
+<#@ parameter name="ProjectName" type="System.String" #>
 Run the following command in the root directory:
 "dotnet ef migrations add --project <#= ProjectName #>.Persistence\<#= ProjectName #>.Persistence.csproj --startup-project <#= ProjectName #>.Api\<#= ProjectName #>.Api.csproj --context <#= ProjectName #>.Persistence.<#= ProjectName #>DbContext --configuration Debug initialize_migrations --output-dir Migrations"
 

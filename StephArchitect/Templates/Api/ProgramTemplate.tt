@@ -1,6 +1,6 @@
 ﻿<#@ template language="C#" #>
-    <#@ output extension=".cs" #>
-    <#@ parameter name="ProjectName" type="System.String" #>
+<#@ output extension=".cs" #>
+<#@ parameter name="ProjectName" type="System.String" #>
 using Microsoft.OpenApi.Models;
 using <#= ProjectName #>.Application;
 using <#= ProjectName #>.Infrastructure;

@@ -1,8 +1,6 @@
 <#@ template language="C#" #>
 <#@ output extension=".cs" #>
-
 <#@ parameter name="ProjectName" type="System.String" #>
-
 using Microsoft.EntityFrameworkCore;
 using <#= ProjectName #>.Application;
 using <#= ProjectName #>.Domain;

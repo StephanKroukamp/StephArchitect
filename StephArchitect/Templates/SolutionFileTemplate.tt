@@ -4,7 +4,6 @@
 <#@ parameter name="BaseOutputPath" type="System.String" #>
 <#@ import namespace="System.IO" #>
 <#@ import namespace="System" #>
-
 <#
     var domainProjectPath = Path.Combine(BaseOutputPath, $"{ProjectName}.Domain", $"{ProjectName}.Domain.csproj");
     var contractsProjectPath = Path.Combine(BaseOutputPath, $"{ProjectName}.Contracts", $"{ProjectName}.Contracts.csproj");

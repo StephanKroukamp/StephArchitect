@@ -1,15 +1,15 @@
 ﻿<#@ template language="C#" debug="false" hostspecific="true" #>
-    <#@ output extension=".cs" #>
-    <#@ parameter name="ProjectName" type="System.String" #>
-    <#@ parameter name="EntityName" type="System.String" #>
-    <#@ parameter name="PluralEntityName" type="System.String" #>
-
+<#@ output extension=".cs" #>
+<#@ parameter name="ProjectName" type="System.String" #>
+<#@ parameter name="EntityName" type="System.String" #>
+<#@ parameter name="PluralEntityName" type="System.String" #>
 using MediatR;
-using <#= ProjectName #>.Application.Commands;
 using <#= ProjectName #>.Domain.<#= PluralEntityName #>;
+using <#= ProjectName #>.Application.<#= PluralEntityName #>.Commands;
+using <#= ProjectName #>.Application.<#= PluralEntityName #>.Queries;
 
-namespace <#= ProjectName #>.Api.Endpoints
-{
+namespace <#= ProjectName #>.Api.<#= PluralEntityName #>;
+
 public static class <#= EntityName #>Endpoints
 {
     public static void Map<#= EntityName #>Endpoints(this WebApplication app)
@@ -40,5 +40,4 @@ public static class <#= EntityName #>Endpoints
             return Results.Ok($"Deleted <#= EntityName #> with id: {id}");
         });
     }
-}
 }

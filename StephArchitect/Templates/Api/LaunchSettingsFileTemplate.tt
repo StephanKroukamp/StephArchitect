@@ -1,7 +1,6 @@
 ﻿<#@ template language="C#" #>
-    <#@ output extension=".json" #>
-    <#@ parameter name="ProjectName" type="System.String" #>
-
+<#@ output extension=".json" #>
+<#@ parameter name="ProjectName" type="System.String" #>
 "$schema": "http://json.schemastore.org/launchsettings.json",
 {
   "iisSettings": {

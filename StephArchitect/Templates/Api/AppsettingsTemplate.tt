@@ -1,6 +1,6 @@
 ﻿<#@ template language="C#" #>
-    <#@ output extension=".json" #>
-    <#@ parameter name="ProjectName" type="System.String" #>
+<#@ output extension=".json" #>
+<#@ parameter name="ProjectName" type="System.String" #>
 {
     "ConnectionStrings": {
         "DefaultConnection": "Server=STEPHAN\\SQLEXPRESS;Database=<#= ProjectName #>;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True;"
