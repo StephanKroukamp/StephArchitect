@@ -1,0 +1,18 @@
+
+<#@ template language="C#" #>
+<#@ output extension=".cs" #>
+
+<#@ assembly name="StephArchitect" #>
+
+<#@ import namespace="StephArchitect" #>
+
+<#@ parameter name="ProjectName" type="System.String" #>
+<#@ parameter name="Entity" type="StephArchitect.Entity" #>
+
+using <#= ProjectName #>.Application;
+using <#= ProjectName #>.Domain.<#= Entity.Name.Pluralize() #>;
+
+namespace <#= ProjectName #>.Persistence;
+
+
+public class <#= Entity.Name #>Repository(<#= ProjectName #>DbContext context) : Repository<<#= Entity.Name #>>(context), I<#= Entity.Name #>Repository;

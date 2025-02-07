@@ -29,7 +29,7 @@
 
 namespace <#= ProjectName #>.Domain.<#= Entity.Name.Pluralize() #>
 {
-public class <#= Entity.Name #>
+public class <#= Entity.Name #> : IEntity
     {
         public <#=
                     Entity.Properties.First(p => p.PrimaryKey).Type #> <#=

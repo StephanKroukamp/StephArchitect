@@ -1,0 +1,16 @@
+<#@ template language="C#" #>
+<#@ output extension=".cs" #>
+
+<#@ assembly name="StephArchitect" #>
+
+<#@ import namespace="StephArchitect" #>
+<#@ import namespace="System.Linq" #>
+
+<#@ parameter name="ProjectName" type="System.String" #>
+
+namespace <#= ProjectName #>.Domain;
+
+public interface IEntity
+{
+    public long Id { get; set; }
+}

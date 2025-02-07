@@ -186,6 +186,11 @@ public class ProjectGenerator(string ProjectName, string BaseOutputPath, string 
 
     private async Task GenerateDomainLayer()
     {
+        await GenerateTemplate(
+            Path.Combine(_templateDirectory, "Domain", "IEntityTemplate.tt"),
+            Path.Combine(BaseOutputPath, $"{ProjectName}.Domain", "IEntity.cs"),
+            new Dictionary<string, object> { { "ProjectName", ProjectName } });
+
         foreach (var entity in _entities)
         {
             var path = Path.Combine(BaseOutputPath, $"{ProjectName}.Domain", entity.Name.Pluralize());
@@ -217,6 +222,11 @@ public class ProjectGenerator(string ProjectName, string BaseOutputPath, string 
     {
         var path = Path.Combine(BaseOutputPath, $"{ProjectName}.Application");
 
+        await GenerateTemplate(
+            Path.Combine(_templateDirectory, "Application", "IRepositoryTemplate.tt"),
+            Path.Combine(path, "IRepositoryTemplate.cs"),
+            new Dictionary<string, object> { { "ProjectName", ProjectName } });
+
         foreach (var entity in _entities)
         {
             await GenerateCommandsAndQueries(path, entity);
@@ -235,6 +245,11 @@ public class ProjectGenerator(string ProjectName, string BaseOutputPath, string 
 
     private async Task GenerateCommandsAndQueries(string path, Entity entity)
     {
+        await GenerateTemplate(
+            Path.Combine(_templateDirectory, "Application", "IEntityRepositoryTemplate.tt"),
+            Path.Combine(path, entity.Name.Pluralize(), $"I{entity.Name}Repository.cs"),
+            new Dictionary<string, object> { { "ProjectName", ProjectName }, { "Entity", entity } });
+
         await GenerateTemplate(
             Path.Combine(_templateDirectory, "Application", "CreateCommandTemplate.tt"),
             Path.Combine(path, entity.Name.Pluralize(), "Commands", $"Create{entity.Name}Command.cs"),
@@ -287,6 +302,11 @@ public class ProjectGenerator(string ProjectName, string BaseOutputPath, string 
     {
         var path = Path.Combine(BaseOutputPath, $"{ProjectName}.Persistence");
 
+        await GenerateTemplate(
+            Path.Combine(_templateDirectory, "Persistence", "RepositoryTemplate.tt"),
+            Path.Combine(path, "Repository.cs"),
+            new Dictionary<string, object> { { "ProjectName", ProjectName } });
+
         foreach (var entity in _entities)
         {
             await GenerateTemplate(
@@ -294,6 +314,12 @@ public class ProjectGenerator(string ProjectName, string BaseOutputPath, string 
                 Path.Combine(path, entity.Name.Pluralize(), $"{entity.Name}EntityConfiguration.cs"),
                 new Dictionary<string, object>
                     { { "ProjectName", ProjectName }, { "Entity", entity }, { "Relationships", _relationships } });
+
+            await GenerateTemplate(
+                Path.Combine(_templateDirectory, "Persistence", "EntityRepositoryTemplate.tt"),
+                Path.Combine(path, entity.Name.Pluralize(), $"{entity.Name}Repository.cs"),
+                new Dictionary<string, object>
+                    { { "ProjectName", ProjectName }, { "Entity", entity } });
         }
 
         await GenerateTemplate(
@@ -377,15 +403,15 @@ public class ProjectGenerator(string ProjectName, string BaseOutputPath, string 
 
                 throw new Exception("Failed to process the T4 template.");
             }
-            
+
             // at this point we have the newly generated code
             var oldFilePath = Manifest?.Files.FirstOrDefault(path => path == outputPath);
-            
+
             // if the file was not created before, write the new file
             if (oldFilePath is null)
             {
                 await File.WriteAllTextAsync(newFilename, newCode);
-                
+
                 return;
             }
 
@@ -394,7 +420,7 @@ public class ProjectGenerator(string ProjectName, string BaseOutputPath, string 
             {
                 return;
             }
-            
+
             // if the file was created before, check if the old and new hashes are the same
             var oldCode = await File.ReadAllTextAsync(oldFilePath);
 
@@ -403,14 +429,14 @@ public class ProjectGenerator(string ProjectName, string BaseOutputPath, string 
             {
                 return;
             }
-            
+
             // if there are no keep comments, write the new file
             if (!oldCode.Contains("Keep:"))
             {
                 PrintDifferencesBetweenFiles(oldCode, newCode);
-                
+
                 await File.WriteAllTextAsync(newFilename, newCode);
-                
+
                 return;
             }
 
@@ -428,7 +454,7 @@ public class ProjectGenerator(string ProjectName, string BaseOutputPath, string 
             }
 
             PrintDifferencesBetweenFiles(oldCode, newCode);
-            
+
             await File.WriteAllTextAsync(newFilename, newCode);
         }
         finally

@@ -1,0 +1,18 @@
+<#@ template language="C#" #>
+<#@ output extension=".cs" #>
+
+<#@ assembly name="StephArchitect" #>
+
+<#@ import namespace="StephArchitect" #>
+<#@ import namespace="System.Linq" #>
+
+<#@ parameter name="ProjectName" type="System.String" #>
+<#@ parameter name="Entity" type="StephArchitect.Entity" #>
+using <#= ProjectName #>.Domain.<#= Entity.Name.Pluralize() #>;
+
+namespace <#= ProjectName #>.Application;
+
+public interface I<#= Entity.Name #>Repository : IRepository<<#= Entity.Name #>>
+{
+    
+}

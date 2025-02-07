@@ -1,0 +1,28 @@
+<#@ template language="C#" #>
+<#@ output extension=".cs" #>
+
+<#@ assembly name="StephArchitect" #>
+
+<#@ import namespace="StephArchitect" #>
+<#@ import namespace="System.Linq" #>
+
+<#@ parameter name="ProjectName" type="System.String" #>
+
+using <#= ProjectName #>.Domain;
+
+namespace <#= ProjectName #>.Application;
+
+public interface IRepository<T> where T : class, IEntity
+{
+    public Task SaveChangesAsync(CancellationToken cancellationToken);
+    
+    public Task<T?> GetByIdAsync(long id, CancellationToken cancellationToken);
+    
+    public Task<List<T>> GetAllAsync(CancellationToken cancellationToken);
+    
+    public void Add(T entity);
+    
+    public void Remove(T entity);
+    
+    public void Update(T entity);
+}

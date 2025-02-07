@@ -1,0 +1,36 @@
+<#@ template language="C#" #>
+<#@ output extension=".cs" #>
+
+<#@ parameter name="ProjectName" type="System.String" #>
+
+using Microsoft.EntityFrameworkCore;
+using <#= ProjectName #>.Application;
+using <#= ProjectName #>.Domain;
+
+namespace <#= ProjectName #>.Persistence;
+
+public class Repository<T>(<#= ProjectName #>DbContext context) : IRepository<T>
+    where T : class, IEntity
+{
+    public async Task SaveChangesAsync(CancellationToken cancellationToken) =>
+        await context.SaveChangesAsync(cancellationToken);
+
+    public async Task<T?> GetByIdAsync(long id, CancellationToken cancellationToken) =>
+        await context
+            .Set<T>()
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken: cancellationToken);
+
+    public async Task<List<T>> GetAllAsync(CancellationToken cancellationToken) =>
+        await context
+            .Set<T>()
+            .ToListAsync(cancellationToken);
+
+    public void Add(T entity) =>
+        context.Set<T>().Add(entity);
+
+    public void Remove(T entity) =>
+        context.Set<T>().Remove(entity);
+
+    public void Update(T entity) =>
+        context.Set<T>().Update(entity);
+}
