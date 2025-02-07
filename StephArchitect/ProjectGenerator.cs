@@ -29,17 +29,6 @@ public class ProjectGenerator(string ProjectName, string BaseOutputPath, string 
 
         CreateBaseDirectoryStructure();
 
-        // await GenerateDomainLayer();
-        // await GenerateContractsLayer();
-        // await GenerateApplicationLayer();
-        // await GenerateApiLayer();
-        // await GeneratePersistenceLayer();
-        // await GenerateInfrastructureLayer();
-        // await GenerateProgramFile();
-        // await GenerateSolutionFile();
-        // await GenerateGlobalJsonFile();
-        // await GenerateReadmeFile();
-
         await Task.WhenAll([
             GenerateDomainLayer(),
             GenerateContractsLayer(),
