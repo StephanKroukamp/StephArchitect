@@ -41,8 +41,6 @@ public class ProjectGenerator(string projectName, string baseOutputPath, string 
             GenerateReadmeFile()
         ]);
 
-        var firstTime = Manifest is null;
-
         Manifest ??= new Manifest
         {
             Files = Directory
@@ -57,11 +55,8 @@ public class ProjectGenerator(string projectName, string baseOutputPath, string 
 
         DotnetCli.RestoreNugetPackages(baseOutputPath);
 
-        if (firstTime)
-        {
-            DotnetCli.AddNewMigration(projectName, baseOutputPath);
-            DotnetCli.ApplyMigration(projectName, baseOutputPath);
-        }
+        // DotnetCli.AddNewMigration(projectName, baseOutputPath);
+        // DotnetCli.ApplyMigration(projectName, baseOutputPath);
     }
 
     private async Task<Manifest?> LoadManifestFiles()
@@ -196,12 +191,12 @@ public class ProjectGenerator(string projectName, string baseOutputPath, string 
                 Path.Combine(_templateDirectory, "Application", "Commands", "CreateEntityCommand.tt"),
                 Path.Combine(path, entity.Name.Pluralize(), "Commands", $"Create{entity.Name}Command.cs"),
                 new Dictionary<string, object> { { "ProjectName", projectName }, { "Entity", entity } });
-            
+
             await GenerateTemplate(
                 Path.Combine(_templateDirectory, "Application", "Commands", "DeleteEntityByIdCommand.tt"),
                 Path.Combine(path, entity.Name.Pluralize(), "Commands", $"Delete{entity.Name}ByIdCommand.cs"),
                 new Dictionary<string, object> { { "ProjectName", projectName }, { "Entity", entity } });
-            
+
             await GenerateTemplate(
                 Path.Combine(_templateDirectory, "Application", "Commands", "UpdateEntityCommand.tt"),
                 Path.Combine(path, entity.Name.Pluralize(), "Commands", $"Update{entity.Name}Command.cs"),
@@ -211,7 +206,7 @@ public class ProjectGenerator(string projectName, string baseOutputPath, string 
                 Path.Combine(_templateDirectory, "Application", "Queries", "GetEntitiesQuery.tt"),
                 Path.Combine(path, entity.Name.Pluralize(), "Queries", $"Get{entity.Name.Pluralize()}Query.cs"),
                 new Dictionary<string, object> { { "ProjectName", projectName }, { "Entity", entity } });
-            
+
             await GenerateTemplate(
                 Path.Combine(_templateDirectory, "Application", "Queries", "GetEntityByIdQuery.tt"),
                 Path.Combine(path, entity.Name.Pluralize(), "Queries", $"Get{entity.Name}ByIdQuery.cs"),
