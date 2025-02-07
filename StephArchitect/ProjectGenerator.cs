@@ -42,46 +42,27 @@ public class ProjectGenerator(string ProjectName, string BaseOutputPath, string 
             GenerateReadmeFile()
         ]);
 
-        await PersistManifestFiles();
+        var firstTime = Manifest is null;
+        
+        Manifest ??= new Manifest
+        {
+            Files = Directory
+                .GetFiles(BaseOutputPath, "*", SearchOption.AllDirectories)
+                .ToList()
+        };
+
+        await File.WriteAllTextAsync(Path.Combine(BaseOutputPath, "manifest.json"),
+            JsonConvert.SerializeObject(Manifest, Formatting.Indented));
 
         PrintGenerationSummary();
 
-        RestoreNugetPackages();
+        DotnetCliHelper.RestoreNugetPackages(BaseOutputPath);
 
-        EfMigrationHelper.RunEfMigrations(ProjectName, BaseOutputPath);
-    }
-
-    private void RestoreNugetPackages()
-    {
-        var objPi = new ProcessStartInfo("dotnet", $"restore \"{BaseOutputPath}\" --verbosity quiet")
+        if (firstTime)
         {
-            RedirectStandardError = true,
-            RedirectStandardOutput = true,
-            UseShellExecute = false
-        };
-
-        var objProcess = Process.Start(objPi);
-
-        if (objProcess is null)
-        {
-            return;
+            DotnetCliHelper.AddNewMigration(ProjectName, BaseOutputPath);
+            DotnetCliHelper.ApplyMigration(ProjectName, BaseOutputPath);
         }
-
-        var error = objProcess.StandardError.ReadToEnd();
-
-        if (!string.IsNullOrWhiteSpace(error))
-        {
-            Console.WriteLine($"Error: {error}");
-        }
-
-        var output = objProcess.StandardOutput.ReadToEnd();
-
-        if (!string.IsNullOrWhiteSpace(output))
-        {
-            Console.WriteLine($"Output: {output}");
-        }
-
-        objProcess.WaitForExit();
     }
 
     private async Task<Manifest?> LoadManifestFiles()
@@ -96,19 +77,6 @@ public class ProjectGenerator(string ProjectName, string BaseOutputPath, string 
         var manifestFile = await File.ReadAllTextAsync(path);
 
         return JsonConvert.DeserializeObject<Manifest>(manifestFile);
-    }
-
-    private async Task PersistManifestFiles()
-    {
-        Manifest ??= new Manifest
-        {
-            Files = Directory
-                .GetFiles(BaseOutputPath, "*", SearchOption.AllDirectories)
-                .ToList()
-        };
-
-        await File.WriteAllTextAsync(Path.Combine(BaseOutputPath, "manifest.json"),
-            JsonConvert.SerializeObject(Manifest, Formatting.Indented));
     }
 
     private static string ComputeFileHash(string fileContent)

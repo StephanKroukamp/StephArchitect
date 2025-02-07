@@ -2,24 +2,36 @@ using System.Diagnostics;
 
 namespace StephArchitect;
 
-public class EfMigrationHelper
+public class DotnetCliHelper
 {
-    public static void RunEfMigrations(string projectName, string baseOutputPath)
+    public static void AddNewMigration(string projectName, string baseOutputPath)
     {
-        string migrationCommand = 
+        var migrationCommand =
             $"ef migrations add --project {projectName}.Persistence\\{projectName}.Persistence.csproj " +
             $"--startup-project {projectName}.Api\\{projectName}.Api.csproj " +
             $"--context {projectName}.Persistence.{projectName}DbContext " +
             $"--configuration Debug initialize_migrations --output-dir Migrations";
 
-        string updateCommand = 
+
+        ExecuteDotnetCommand(migrationCommand, baseOutputPath);
+    }
+
+    public static void ApplyMigration(string projectName, string baseOutputPath)
+    {
+        var updateCommand =
             $"ef database update --project {projectName}.Persistence\\{projectName}.Persistence.csproj " +
             $"--startup-project {projectName}.Api\\{projectName}.Api.csproj " +
             $"--context {projectName}.Persistence.{projectName}DbContext " +
             $"--configuration Debug initialize_migrations";
 
-        ExecuteDotnetCommand(migrationCommand, baseOutputPath);
         ExecuteDotnetCommand(updateCommand, baseOutputPath);
+    }
+
+    public static void RestoreNugetPackages(string baseOutputPath)
+    {
+        var restoreCommand = $"restore \"{baseOutputPath}\" --verbosity quiet";
+
+        ExecuteDotnetCommand(restoreCommand, baseOutputPath);
     }
 
     private static void ExecuteDotnetCommand(string arguments, string workingDirectory)
@@ -40,8 +52,8 @@ public class EfMigrationHelper
             return;
         }
 
-        string output = process.StandardOutput.ReadToEnd();
-        string error = process.StandardError.ReadToEnd();
+        var output = process.StandardOutput.ReadToEnd();
+        var error = process.StandardError.ReadToEnd();
 
         if (!string.IsNullOrWhiteSpace(output))
         {

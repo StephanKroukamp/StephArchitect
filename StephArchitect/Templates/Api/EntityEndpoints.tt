@@ -19,28 +19,38 @@ public static class <#= EntityName #>Endpoints
             var result = await mediator.Send(command);
 
             return Results.Created($"/<#= EntityName.ToLower() #>/{result.Id}", result);
-        });
+        })
+        .WithTags("<#= PluralEntityName #>")
+        .WithName("Create<#= EntityName #>");
 
         app.MapGet("/<#= EntityName.ToLower() #>", () =>
         {
             return Results.Ok("GET all <#= EntityName #>s");
-        });
+        })
+        .WithTags("<#= PluralEntityName #>")
+        .WithName("Get<#= PluralEntityName #>");
 
         app.MapGet("/<#= EntityName.ToLower() #>/{id}", async (int id, IMediator mediator) =>
         {
             var result = await mediator.Send(new Get<#= EntityName #>ByIdQuery(id));
 
             return Results.Ok(result);
-        });
+        })
+        .WithTags("<#= PluralEntityName #>")
+        .WithName("Get<#= EntityName #>ById");
 
         app.MapPut("/<#= EntityName.ToLower() #>/{id}", (int id, <#= EntityName #> updatedEntity) =>
         {
             return Results.Ok($"Updated <#= EntityName #> with id: {id}");
-        });
+        })
+        .WithTags("<#= PluralEntityName #>")
+        .WithName("Update<#= EntityName #>ById");
 
         app.MapDelete("/<#= EntityName.ToLower() #>/{id}", (int id) =>
         {
             return Results.Ok($"Deleted <#= EntityName #> with id: {id}");
-        });
+        })
+        .WithTags("<#= PluralEntityName #>")
+        .WithName("Delete<#= EntityName #>ById");
     }
 }
