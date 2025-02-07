@@ -4,6 +4,7 @@
 <#@ parameter name="EntityName" type="System.String" #>
 <#@ parameter name="PluralEntityName" type="System.String" #>
 using MediatR;
+using Microsoft.AspNetCore.Http.HttpResults;
 using <#= ProjectName #>.Domain.<#= PluralEntityName #>;
 using <#= ProjectName #>.Application.<#= PluralEntityName #>.Commands;
 using <#= ProjectName #>.Application.<#= PluralEntityName #>.Queries;
@@ -14,43 +15,37 @@ public static class <#= EntityName #>Endpoints
 {
     public static void Map<#= EntityName #>Endpoints(this WebApplication app)
     {
-        app.MapPost("/<#= EntityName.ToLower() #>", async (Create<#= EntityName #>Command command, IMediator mediator) =>
-        {
-            var result = await mediator.Send(command);
+        var endpoints = app
+            .MapGroup("/<#= PluralEntityName #>")
+            .WithTags("<#= PluralEntityName #>");
 
-            return Results.Created($"/<#= EntityName.ToLower() #>/{result.Id}", result);
-        })
-        .WithTags("<#= PluralEntityName #>")
-        .WithName("Create<#= EntityName #>");
-
-        app.MapGet("/<#= EntityName.ToLower() #>", () =>
-        {
-            return Results.Ok("GET all <#= EntityName #>s");
-        })
-        .WithTags("<#= PluralEntityName #>")
-        .WithName("Get<#= PluralEntityName #>");
-
-        app.MapGet("/<#= EntityName.ToLower() #>/{id}", async (int id, IMediator mediator) =>
-        {
-            var result = await mediator.Send(new Get<#= EntityName #>ByIdQuery(id));
-
-            return Results.Ok(result);
-        })
-        .WithTags("<#= PluralEntityName #>")
-        .WithName("Get<#= EntityName #>ById");
-
-        app.MapPut("/<#= EntityName.ToLower() #>/{id}", (int id, <#= EntityName #> updatedEntity) =>
-        {
-            return Results.Ok($"Updated <#= EntityName #> with id: {id}");
-        })
-        .WithTags("<#= PluralEntityName #>")
-        .WithName("Update<#= EntityName #>ById");
-
-        app.MapDelete("/<#= EntityName.ToLower() #>/{id}", (int id) =>
-        {
-            return Results.Ok($"Deleted <#= EntityName #> with id: {id}");
-        })
-        .WithTags("<#= PluralEntityName #>")
-        .WithName("Delete<#= EntityName #>ById");
+        endpoints.MapGet("/", GetAll<#= PluralEntityName #>);
+        endpoints.MapGet("/{id}", Get<#= EntityName #>ById);
+        endpoints.MapPost("/", Create<#= EntityName #>);
+        endpoints.MapPut("/{id}", Update<#= EntityName #>ById);
+        endpoints.MapDelete("/{id}", Delete<#= EntityName #>ById);
     }
+
+    private static Results<Ok<string>, NotFound> GetAll<#= PluralEntityName #>() =>
+        TypedResults.Ok("");
+
+    private static async Task<IResult> Get<#= EntityName #>ById(int id, IMediator mediator)
+    {
+        var result = await mediator.Send(new Get<#= EntityName #>ByIdQuery(id));
+
+        return Results.Ok(result);
+    }
+
+    private static async Task<IResult> Create<#= EntityName #> (Create<#= EntityName #>Command command, IMediator mediator) 
+    {
+        var result = await mediator.Send(command);
+
+        return Results.Created($"/<#= EntityName.ToLower() #>/{result.Id}", result);
+    }
+
+    private static Results<Ok<string>, NotFound> Update<#= EntityName #>ById() =>
+        TypedResults.Ok("");
+
+    private static Results<Ok<string>, NotFound> Delete<#= EntityName #>ById() =>
+        TypedResults.Ok("");
 }
