@@ -1,0 +1,19 @@
+﻿<#@ template language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="StephArchitect" #>
+<#@ import namespace="StephArchitect" #>
+<#@ import namespace="System.Linq" #>
+<#@ parameter name="ProjectName" type="System.String" #>
+<#@ parameter name="Entity" type="StephArchitect.Entity" #>
+using MediatR;
+using <#= ProjectName #>.Domain.<#= Entity.Name.Pluralize() #>;
+
+namespace <#= ProjectName #>.Application.<#= Entity.Name.Pluralize() #>.Queries;
+
+public record Get<#= Entity.Name.Pluralize() #>Query : IRequest<List<<#= Entity.Name #>>>;
+
+public class Get<#= Entity.Name.Pluralize() #>QueryHandler(I<#= Entity.Name #>Repository <#= Entity.Name.ToLower() #>Repository) : IRequestHandler<Get<#= Entity.Name.Pluralize() #>Query, List<<#= Entity.Name #>>>
+{
+    public async Task<List<<#= Entity.Name #>>> Handle(Get<#= Entity.Name.Pluralize() #>Query request, CancellationToken cancellationToken) =>
+        await <#= Entity.Name.ToLower() #>Repository.GetAllAsync(cancellationToken);
+}

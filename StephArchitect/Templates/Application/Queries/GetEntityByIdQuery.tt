@@ -12,7 +12,7 @@ namespace <#= ProjectName #>.Application.<#= Entity.Name.Pluralize() #>.Queries;
 
 public record Get<#= Entity.Name #>ByIdQuery(<#= string.Join(", ", Entity.Properties.Where(p => p.Name.Equals("Id")).Select(p => p.Type + " " + p.Name)) #>) : IRequest<<#= Entity.Name #>?>;
 
-public class Get<#= Entity.Name #>ByIdHandler(I<#= Entity.Name #>Repository <#= Entity.Name.ToLower() #>Repository) : IRequestHandler<Get<#= Entity.Name #>ByIdQuery, <#= Entity.Name #>?>
+public class Get<#= Entity.Name #>ByIdQueryHandler(I<#= Entity.Name #>Repository <#= Entity.Name.ToLower() #>Repository) : IRequestHandler<Get<#= Entity.Name #>ByIdQuery, <#= Entity.Name #>?>
 {
     public async Task<<#= Entity.Name #>?> Handle(Get<#= Entity.Name #>ByIdQuery request, CancellationToken cancellationToken) =>
         await <#= Entity.Name.ToLower() #>Repository.GetByIdAsync(request.Id, cancellationToken);
