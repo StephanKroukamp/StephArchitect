@@ -21,7 +21,7 @@ public static class <#= EntityName #>Endpoints
         endpoints.MapGet("/", Get<#= PluralEntityName #>);
         endpoints.MapGet("/{id}", Get<#= EntityName #>ById);
         endpoints.MapPost("/", Create<#= EntityName #>);
-        endpoints.MapPut("/{id}", Update<#= EntityName #>ById);
+        endpoints.MapPut("/{id}", Update<#= EntityName #>);
         endpoints.MapDelete("/{id}", Delete<#= EntityName #>ById);
     }
 
@@ -51,7 +51,7 @@ public static class <#= EntityName #>Endpoints
         return Results.Created($"/<#= EntityName.ToLower() #>/{result.Id}", result);
     }
 
-    private static async Task<IResult> Update<#= EntityName #>ById(Update<#= EntityName #>Command command, IMediator mediator) 
+    private static async Task<IResult> Update<#= EntityName #>(Update<#= EntityName #>Command command, IMediator mediator) 
     {
         var result = await mediator.Send(command);
 
