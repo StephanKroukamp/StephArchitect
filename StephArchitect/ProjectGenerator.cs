@@ -231,11 +231,6 @@ public class ProjectGenerator(string ProjectName, string BaseOutputPath, string 
             Path.Combine(_templateDirectory, "Application", "ApplicationDependencyInjectionFileTemplate.tt"),
             Path.Combine(path, "DependencyInjection.cs"),
             new Dictionary<string, object> { { "ProjectName", ProjectName } });
-        
-        await GenerateTemplate(
-            Path.Combine(_templateDirectory, "Application", "IDbContextTemplate.tt"),
-            Path.Combine(path, "IDbContextTemplate.cs"),
-            new Dictionary<string, object> { { "ProjectName", ProjectName } });
     }
 
     private async Task GenerateCommandsAndQueries(string path, Entity entity)
