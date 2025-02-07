@@ -5,7 +5,6 @@
 <#@ parameter name="PluralEntityName" type="System.String" #>
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
-using <#= ProjectName #>.Domain.<#= PluralEntityName #>;
 using <#= ProjectName #>.Application.<#= PluralEntityName #>.Commands;
 using <#= ProjectName #>.Application.<#= PluralEntityName #>.Queries;
 
@@ -36,19 +35,28 @@ public static class <#= EntityName #>Endpoints
     private static async Task<IResult> Get<#= EntityName #>ById(int id, IMediator mediator)
     {
         var result = await mediator.Send(new Get<#= EntityName #>ByIdQuery(id));
+        
+        if (result is null)
+        {
+            return Results.NotFound(id);
+        }
 
         return Results.Ok(result);
     }
 
-    private static async Task<IResult> Create<#= EntityName #> (Create<#= EntityName #>Command command, IMediator mediator) 
+    private static async Task<IResult> Create<#= EntityName #>(Create<#= EntityName #>Command command, IMediator mediator) 
     {
         var result = await mediator.Send(command);
 
         return Results.Created($"/<#= EntityName.ToLower() #>/{result.Id}", result);
     }
 
-    private static Results<Ok<string>, NotFound> Update<#= EntityName #>ById() =>
-        TypedResults.Ok("");
+    private static async Task<IResult> Update<#= EntityName #>ById(Update<#= EntityName #>Command command, IMediator mediator) 
+    {
+        var result = await mediator.Send(command);
+
+        return Results.Ok(result);
+    }
 
     private static Results<Ok<string>, NotFound> Delete<#= EntityName #>ById() =>
         TypedResults.Ok("");

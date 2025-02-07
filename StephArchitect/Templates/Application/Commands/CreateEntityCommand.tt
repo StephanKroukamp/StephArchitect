@@ -13,9 +13,9 @@ namespace <#= ProjectName #>.Application.<#= Entity.Name.Pluralize() #>.Commands
 
 public record Create<#= Entity.Name #>Command(<#= string.Join(", ", Entity.Properties.Where(p => !p.Name.Equals("Id")).Select(p => p.Type + " " + p.Name)) #>) : IRequest<<#= Entity.Name #>>;
 
-public class <#= Entity.Name #>MappingProfile : Profile
+public class Create<#= Entity.Name #>CommandMappingProfile : Profile
 {
-    public <#= Entity.Name #>MappingProfile()
+    public Create<#= Entity.Name #>CommandMappingProfile()
     {
         CreateMap<Create<#= Entity.Name #>Command, <#= Entity.Name #>>()
             .ForMember(dest => dest.Id, opt => opt.Ignore());
