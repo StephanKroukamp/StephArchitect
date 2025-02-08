@@ -1,7 +1,33 @@
-﻿<#@ template language="C#" #>
-<#@ output extension=".md" #>
-<#@ parameter name="ProjectName" type="System.String" #>
-Run the following command in the root directory:
-"dotnet ef migrations add --project <#= ProjectName #>.Persistence\<#= ProjectName #>.Persistence.csproj --startup-project <#= ProjectName #>.Api\<#= ProjectName #>.Api.csproj --context <#= ProjectName #>.Persistence.<#= ProjectName #>DbContext --configuration Debug initialize_migrations --output-dir Migrations"
-
-"dotnet ef database update --project <#= ProjectName #>.Persistence\<#= ProjectName #>.Persistence.csproj --startup-project <#= ProjectName #>.Api\<#= ProjectName #>.Api.csproj --context <#= ProjectName #>.Persistence.<#= ProjectName #>DbContext --configuration Debug initialize_migrations"
+﻿<#@ output extension=".json" #>
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "outDir": "./dist/out-tsc",
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "declaration": false,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "ES2022",
+    "useDefineForClassFields": false,
+    "lib": [
+      "ES2022",
+      "dom"
+    ]
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  }
+}

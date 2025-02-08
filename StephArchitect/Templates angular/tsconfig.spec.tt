@@ -1,74 +1,14 @@
-﻿<#@ template language="C#" #>
-<#@ output extension=".sln" #>
-<#@ parameter name="ProjectName" type="System.String" #>
-<#@ parameter name="BaseOutputPath" type="System.String" #>
-<#@ import namespace="System.IO" #>
-<#@ import namespace="System" #>
-<#
-    var domainProjectPath = Path.Combine(BaseOutputPath, $"{ProjectName}.Domain", $"{ProjectName}.Domain.csproj");
-    var contractsProjectPath = Path.Combine(BaseOutputPath, $"{ProjectName}.Contracts", $"{ProjectName}.Contracts.csproj");
-    var appProjectPath = Path.Combine(BaseOutputPath, $"{ProjectName}.Application", $"{ProjectName}.Application.csproj");
-    var infrastructureProjectPath = Path.Combine(BaseOutputPath, $"{ProjectName}.Infrastructure", $"{ProjectName}.Infrastructure.csproj");
-    var persistenceProjectPath = Path.Combine(BaseOutputPath, $"{ProjectName}.Persistence", $"{ProjectName}.Persistence.csproj");
-    var apiProjectPath = Path.Combine(BaseOutputPath, $"{ProjectName}.Api", $"{ProjectName}.Api.csproj");
- 
-    var domainGuid = Guid.NewGuid().ToString("B").ToUpper();
-    var contractsGuid = Guid.NewGuid().ToString("B").ToUpper();
-    var appGuid = Guid.NewGuid().ToString("B").ToUpper();
-    var infrastructureGuid = Guid.NewGuid().ToString("B").ToUpper();
-    var persistenceGuid = Guid.NewGuid().ToString("B").ToUpper();
-    var apiGuid = Guid.NewGuid().ToString("B").ToUpper();
-#>
-Microsoft Visual Studio Solution File, Format Version 12.00
-
-Project("<#= domainGuid #>") = "<#= ProjectName #>.Domain", "<#= domainProjectPath.Replace("\\", "/") #>", "<#= domainGuid #>"
-EndProject
-Project("<#= contractsGuid #>") = "<#= ProjectName #>.Contracts", "<#= contractsProjectPath.Replace("\\", "/") #>", "<#= contractsGuid #>"
-EndProject
-Project("<#= appGuid #>") = "<#= ProjectName #>.Application", "<#= appProjectPath.Replace("\\", "/") #>", "<#= appGuid #>"
-EndProject
-Project("<#= infrastructureGuid #>") = "<#= ProjectName #>.Infrastructure", "<#= infrastructureProjectPath.Replace("\\", "/") #>", "<#= infrastructureGuid #>"
-EndProject
-Project("<#= persistenceGuid #>") = "<#= ProjectName #>.Persistence", "<#= persistenceProjectPath.Replace("\\", "/") #>", "<#= persistenceGuid #>"
-EndProject
-Project("<#= apiGuid #>") = "<#= ProjectName #>.Api", "<#= apiProjectPath.Replace("\\", "/") #>", "<#= apiGuid #>"
-EndProject
-
-Global
-    GlobalSection(SolutionConfigurationPlatforms) = preSolution
-        Debug|Any CPU = Debug|Any CPU
-        Release|Any CPU = Release|Any CPU
-    EndGlobalSection
-
-    GlobalSection(ProjectConfigurationPlatforms) = postSolution
-        <#= domainGuid #>.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-        <#= domainGuid #>.Debug|Any CPU.Build.0 = Debug|Any CPU
-        <#= domainGuid #>.Release|Any CPU.ActiveCfg = Release|Any CPU
-        <#= domainGuid #>.Release|Any CPU.Build.0 = Release|Any CPU
-
-        <#= contractsGuid #>.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-        <#= contractsGuid #>.Debug|Any CPU.Build.0 = Debug|Any CPU
-        <#= contractsGuid #>.Release|Any CPU.ActiveCfg = Release|Any CPU
-        <#= contractsGuid #>.Release|Any CPU.Build.0 = Release|Any CPU
-
-        <#= appGuid #>.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-        <#= appGuid #>.Debug|Any CPU.Build.0 = Debug|Any CPU
-        <#= appGuid #>.Release|Any CPU.ActiveCfg = Release|Any CPU
-        <#= appGuid #>.Release|Any CPU.Build.0 = Release|Any CPU
-
-        <#= infrastructureGuid #>.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-        <#= infrastructureGuid #>.Debug|Any CPU.Build.0 = Debug|Any CPU
-        <#= infrastructureGuid #>.Release|Any CPU.ActiveCfg = Release|Any CPU
-        <#= infrastructureGuid #>.Release|Any CPU.Build.0 = Release|Any CPU
-
-        <#= persistenceGuid #>.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-        <#= persistenceGuid #>.Debug|Any CPU.Build.0 = Debug|Any CPU
-        <#= persistenceGuid #>.Release|Any CPU.ActiveCfg = Release|Any CPU
-        <#= persistenceGuid #>.Release|Any CPU.Build.0 = Release|Any CPU
-
-        <#= apiGuid #>.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-        <#= apiGuid #>.Debug|Any CPU.Build.0 = Debug|Any CPU
-        <#= apiGuid #>.Release|Any CPU.ActiveCfg = Release|Any CPU
-        <#= apiGuid #>.Release|Any CPU.Build.0 = Release|Any CPU
-    EndGlobalSection
-EndGlobal
+﻿<#@ output extension=".json" #>
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/spec",
+    "types": [
+      "jasmine"
+    ]
+  },
+  "include": [
+    "src/**/*.spec.ts",
+    "src/**/*.d.ts"
+  ]
+}

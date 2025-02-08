@@ -1,8 +1,14 @@
-﻿<#@ template language="C#" #>
-<#@ output extension=".json" #>
-<#@ parameter name="ProjectName" type="System.String" #>
+﻿<#@ output extension=".json" #>
 {
-  "sdk": {
-    "version": "9.0.100"
-  }
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/app",
+    "types": []
+  },
+  "files": [
+    "src/main.ts"
+  ],
+  "include": [
+    "src/**/*.d.ts"
+  ]
 }
