@@ -1,12 +1,13 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using StephArchitect;
+using System.IO;
 
 // steph - mac
 var inputFilePath = "/Users/stephankroukamp/RiderProjects/StephArchitect/StephArchitect/Input/example.json";
 
 // Danie
-// var baseOutputPath = $"../../Output/{projectName}";
-// var inputFilePath = "Input/example.json";
+// var baseOutputPath = $"../../../../../Output/{projectName}";
+// var inputFilePath = "../../../Input/example.json";
 
 // steph - windows
 // var baseOutputPath = @$"C:\\Projects\\{projectName}\\Api";
@@ -20,5 +21,6 @@ var input = JsonConvert.DeserializeObject<Input>(jsonContent) ??
 var apiGenerator = new ApiProjectGenerator($"/Users/stephankroukamp/RiderProjects/{input.ProjectName}-API", input);
 await apiGenerator.GenerateFromInput();
 
-// var mobileGenerator = new MobileProjectGenerator(projectName, $"{StringExtensions.ToSnakeCase(baseOutputPath)}-mobile", inputFilePath);
-// await mobileGenerator.GenerateFromInput();
+
+var mobileGenerator = new MobileProjectGenerator(projectName, Path.Join(baseOutputPath, $"{StringExtensions.ToSnakeCase(projectName)}-mobile"), inputFilePath);
+await mobileGenerator.GenerateFromInput();
