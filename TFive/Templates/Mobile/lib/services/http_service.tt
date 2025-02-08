@@ -3,7 +3,11 @@
 <#@ assembly name="TFive" #>
 <#@ import namespace="TFive" #>
 <#@ parameter name="Entity" type="TFive.Entity" #>
+import 'dart:convert';
+
 import 'package:http/http.dart' as http;
+
+import '../models/<#= StringExtensions.ToSnakeCase(Entity.Name) #>.dart';
 
 class Http<#= Entity.Name #>Service{
   Http<#= Entity.Name #>Service({
@@ -12,21 +16,21 @@ class Http<#= Entity.Name #>Service{
 
   final String baseUrl;
 
-Future<Map<String, String>> getHeaders() async {
+  Future<Map<String, String>> getHeaders() async {
     return {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
     };
   }
 
-  Future<<#= Entity.Name #>> Get<#= Entity.Name.Pluralize() #>() async {
+  Future<List<<#= Entity.Name #>>> Get<#= Entity.Name.Pluralize() #>() async {
     final url = '$baseUrl/<#= Entity.Name.Pluralize() #>';
 
     final headers = await getHeaders();
 
     final response = await http.get(Uri.parse(url), headers: headers);
 
-    return (jsonDecode(response.body) as List<dynamic>).map((e) => <#= Entity.Name #>.fromJson()).toList();
+    return (jsonDecode(response.body) as List<dynamic>).map((e) => <#= Entity.Name #>.fromJson(e as Map<String, Object?>)).toList();
   }
 
   Future<<#= Entity.Name #>> Get<#= Entity.Name #>ById(int id) async {
@@ -36,7 +40,7 @@ Future<Map<String, String>> getHeaders() async {
 
     final response = await http.get(Uri.parse(url), headers: headers);
 
-    return <#= Entity.Name #>.fromJson(jsonDecode(response.body))
+    return <#= Entity.Name #>.fromJson(jsonDecode(response.body));
   }
 
   Future<<#= Entity.Name #>> Update<#= Entity.Name #>(<#= Entity.Name #> request) async {
@@ -46,9 +50,9 @@ Future<Map<String, String>> getHeaders() async {
     
     final body = request.toJson();
 
-    final response = await http.put(Uri.parse(url), body, headers: headers);
+    final response = await http.put(Uri.parse(url), body: body, headers: headers);
 
-    return <#= Entity.Name #>.fromJson(jsonDecode(response.body))
+    return <#= Entity.Name #>.fromJson(jsonDecode(response.body));
   }
 
   Future<<#= Entity.Name #>> Create<#= Entity.Name #>(<#= Entity.Name #> request) async {
@@ -58,9 +62,9 @@ Future<Map<String, String>> getHeaders() async {
 
     final body = request.toJson();
 
-    final response = await http.get(Uri.parse(url), body, headers: headers);
+    final response = await http.post(Uri.parse(url), body: body, headers: headers);
 
-    return <#= Entity.Name #>.fromJson(jsonDecode(response.body))
+    return <#= Entity.Name #>.fromJson(jsonDecode(response.body));
   }
 
   Future<<#= Entity.Name #>> Delete<#= Entity.Name #>(int id) async {
@@ -70,6 +74,6 @@ Future<Map<String, String>> getHeaders() async {
 
     final response = await http.delete(Uri.parse(url), headers: headers);
 
-    return <#= Entity.Name #>.fromJson(jsonDecode(response.body))
+    return <#= Entity.Name #>.fromJson(jsonDecode(response.body));
   }
 }
