@@ -7,7 +7,7 @@ export interface <#= InterfaceName #>{
     <#
     foreach (var item in InterfaceProperties){
     #>
-        <#= item.Name #> : <#= Iitem.Type #> ;
+        <#= item.Name #> : <#= item.Type #> ;
     <#
     }
     #>
