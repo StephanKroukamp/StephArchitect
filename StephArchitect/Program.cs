@@ -7,8 +7,8 @@ var projectName = "Bruno";
 //var baseOutputPath = $"/Users/stephankroukamp/RiderProjects/{projectName}";
 //var inputFilePath = "/Users/stephankroukamp/RiderProjects/StephArchitect/StephArchitect/Input/example.json";
 
-var baseOutputPath = $"../Output/{projectName}";
-var inputFilePath = "StephArchitect/Input/example.json";
+var baseOutputPath = $"../../../../../Output/{projectName}";
+var inputFilePath = "../../../Input/example.json";
 
 // windows
 // var baseOutputPath = @$"C:\\Projects\\{projectName}\\Api";

@@ -110,9 +110,14 @@ public class MobileProjectGenerator(string projectName, string baseOutputPath, s
         {
             await GenerateTemplate(
                 Path.Combine(_templateDirectory, "lib", "models", "model.tt"),
-                Path.Combine(baseOutputPath, "lib", "models", $"{StringExtensions.ToSnakeCase(entity.Name.Pluralize())}.dart"),
+                Path.Combine(baseOutputPath, "lib", "models", $"{StringExtensions.ToSnakeCase(entity.Name)}.dart"),
                 new Dictionary<string, object>
-                    { { "ProjectName", projectName }, { "Entity", entity }, { "Relationships", _relationships } });
+                    { 
+                        { "ProjectName", projectName },
+                        { "SnakeCaseEntityName", StringExtensions.ToSnakeCase(entity.Name) },
+                        { "Entity", entity }, 
+                        { "Relationships", _relationships } 
+                    });
         }
     }
 

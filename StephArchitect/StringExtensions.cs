@@ -46,7 +46,7 @@ public static class StringExtensions
         // Default: add "s"
         return singular + "s";
     }
-/// <summary>
+    /// <summary>
     /// Splits the input string into words based on common delimiters (space, underscore, hyphen)
     /// and also based on camelCase / PascalCase boundaries.
     /// </summary>
@@ -54,14 +54,14 @@ public static class StringExtensions
     {
         if (string.IsNullOrEmpty(input))
             return Array.Empty<string>();
- 
+
         // Replace underscores and hyphens with spaces so that they act as delimiters.
         input = input.Replace("_", " ").Replace("-", " ");
- 
+
         // Split by spaces first.
         var tokens = input.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
         var words = new List<string>();
- 
+
         // For each token, use a regex to split on word boundaries in case of camelCase or PascalCase.
         // This regex matches:
         // - sequences like "XML" or "ID"
@@ -78,7 +78,7 @@ public static class StringExtensions
         }
         return words.ToArray();
     }
- 
+
     /// <summary>
     /// Converts input to PascalCase.
     /// </summary>
@@ -92,7 +92,7 @@ public static class StringExtensions
         }
         return string.Join("", words);
     }
- 
+
     /// <summary>
     /// Converts input to camelCase.
     /// </summary>
@@ -106,7 +106,7 @@ public static class StringExtensions
         }
         return pascal;
     }
- 
+
     /// <summary>
     /// Converts input to snake_case.
     /// </summary>
@@ -119,7 +119,7 @@ public static class StringExtensions
         }
         return string.Join("_", words);
     }
- 
+
     /// <summary>
     /// Converts input to kebab-case.
     /// </summary>
@@ -132,7 +132,7 @@ public static class StringExtensions
         }
         return string.Join("-", words);
     }
- 
+
     /// <summary>
     /// Converts input to Title Case (each word capitalized and separated by a space).
     /// </summary>
@@ -144,5 +144,22 @@ public static class StringExtensions
             words[i] = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(words[i].ToLower());
         }
         return string.Join(" ", words);
+    }
+
+    public static string ToDartType(string typeName)
+    {
+        switch (typeName)
+        {
+            case "long":
+                return "int";
+            case "string":
+                return "String";
+            case "decimal":
+                return "double";
+            case "DateTimeOffset":
+                return "DateTime";
+        }
+
+        return typeName;
     }
 }
