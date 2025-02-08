@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using TFive;
 
-const string inputFilePath = "/Users/stephankroukamp/RiderProjects/TFive/TFive/Input/example.json";
+const string inputFilePath = "../../../Input/example.json";
 
 var jsonContent = await File.ReadAllTextAsync(inputFilePath);
 
