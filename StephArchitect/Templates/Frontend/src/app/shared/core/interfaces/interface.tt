@@ -1,0 +1,14 @@
+<#@ template language="C#" #>
+<#@ output extension=".ts" #>
+<#@ parameter name="InterfaceName" type="System.String" #>
+<#@ parameter name="InterfaceProperties" type="List<StephArchitect.Property>" #>
+
+export interface <#= InterfaceName #>{
+    #>
+    foreach (var item in InterfaceProperties){
+    <#
+        <#= item.Name #> : <#= Iitem.Type #> ;
+    #>
+    }
+    <#
+}
