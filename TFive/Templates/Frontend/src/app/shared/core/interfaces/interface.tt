@@ -1,0 +1,19 @@
+<#@ template language="C#" #>
+<#@ output extension=".ts" #>
+<#@ assembly name="TFive" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="TFive" #>
+<#@ parameter name="InterfaceName" type="System.String" #>
+<#@ parameter name="InterfaceProperties" type="List<TFive.Property>" #>
+
+export interface _<#= InterfaceName #>{
+<#
+foreach (var item in InterfaceProperties){
+#>
+    <#= item.Name #>: <#= StringExtensions.ToAngularType(item.Type) #>;
+<#
+}
+#>
+}

@@ -158,6 +158,27 @@ public static class StringExtensions
                 return "double";
             case "DateTimeOffset":
                 return "DateTime";
+            case "bool": 
+                return "bool";
+        }
+
+        return typeName;
+    }
+    
+    public static string ToAngularType(string typeName)
+    {
+        switch (typeName)
+        {
+            case "long":
+                return "number";
+            case "string":
+                return "string";
+            case "decimal":
+                return "number";
+            case "DateTimeOffset":
+                return "Date";
+            case "bool":
+                return "boolean";
         }
 
         return typeName;
