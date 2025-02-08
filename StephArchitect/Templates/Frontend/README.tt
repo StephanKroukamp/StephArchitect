@@ -1,2 +1,3 @@
-﻿<#@ output extension=".md" #>
+﻿<#@ template language="C#" #>
+<#@ output extension=".md" #>
 This was generated with T5 code!

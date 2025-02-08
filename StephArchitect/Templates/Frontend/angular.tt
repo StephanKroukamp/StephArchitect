@@ -1,4 +1,5 @@
-﻿<#@ output extension=".json" #>
+﻿<#@ template language="C#" #>
+<#@ output extension=".json" #>
 <#@ parameter name="ProjectName" type="System.String" #>
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",

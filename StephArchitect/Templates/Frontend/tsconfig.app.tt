@@ -1,4 +1,5 @@
-﻿<#@ output extension=".json" #>
+﻿<#@ template language="C#" #>
+<#@ output extension=".json" #>
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
