@@ -18,9 +18,14 @@ var jsonContent = await File.ReadAllTextAsync(inputFilePath);
 var input = JsonConvert.DeserializeObject<Input>(jsonContent) ??
             throw new Exception("No entities found in input.");
 
-var apiGenerator = new ApiProjectGenerator($"/Users/stephankroukamp/RiderProjects/{input.ProjectName}-API", input);
-await apiGenerator.GenerateFromInput();
+var baseOutputPath = $"/Users/stephankroukamp/RiderProjects/{input.ProjectName}-API";
 
+// C# Backend Api
+// var apiGenerator = new ApiProjectGenerator(baseOutputPath, input);
+// await apiGenerator.GenerateFromInput();
 
-var mobileGenerator = new MobileProjectGenerator(projectName, Path.Join(baseOutputPath, $"{StringExtensions.ToSnakeCase(projectName)}-mobile"), inputFilePath);
+// Flutter mobile Frontend
+var outputPath = Path.Join(baseOutputPath, $"{StringExtensions.ToSnakeCase(input.ProjectName)}-mobile");
+
+var mobileGenerator = new MobileProjectGenerator(input.ProjectName, outputPath, inputFilePath);
 await mobileGenerator.GenerateFromInput();
