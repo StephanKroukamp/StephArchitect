@@ -1,0 +1,5 @@
+﻿<#@ template language="C#" #>
+<#@ output extension=".html" #>
+<div> Welcome to your generated angular project! </div>
+
+
