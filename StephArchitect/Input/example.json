@@ -1,30 +1,79 @@
 ﻿{
   "Relationships": [
     {
-      "Type": "OneToOne",
-      "Left": "User",
-      "Right": "UserProfile",
+      "Type": "OneToMany",
+      "Left": "Vehicle",
+      "Right": "Rental",
       "LeftId": "Id",
-      "RightId": "UserId"
+      "RightId": "VehicleId"
     },
     {
       "Type": "OneToMany",
-      "Left": "User",
-      "Right": "UserRole",
+      "Left": "Customer",
+      "Right": "Rental",
       "LeftId": "Id",
-      "RightId": "UserId"
-    },
-    {
-      "Type": "OneToMany",
-      "Left": "Role",
-      "Right": "UserRole",
-      "LeftId": "Id",
-      "RightId": "RoleId"
+      "RightId": "CustomerId"
     }
   ],
   "Entities": [
     {
-      "Name": "User",
+      "Name": "Vehicle",
+      "Properties": [
+        {
+          "Name": "Id",
+          "Type": "long",
+          "PrimaryKey": true
+        },
+        {
+          "Name": "Make",
+          "Type": "string"
+        },
+        {
+          "Name": "Model",
+          "Type": "string"
+        },
+        {
+          "Name": "RegistrationNumber",
+          "Type": "string"
+        },
+        {
+          "Name": "Colour",
+          "Type": "string"
+        }
+      ]
+    },
+    {
+      "Name": "Rental",
+      "Properties": [
+        {
+          "Name": "Id",
+          "Type": "long",
+          "PrimaryKey": true
+        },
+        {
+          "Name": "Price",
+          "Type": "decimal"
+        },
+        {
+          "Name": "StartDateTime",
+          "Type": "DateTimeOffset"
+        },
+        {
+          "Name": "EndDateTime",
+          "Type": "DateTimeOffset"
+        },
+        {
+          "Name": "CustomerId",
+          "Type": "long"
+        },
+        {
+          "Name": "VehicleId",
+          "Type": "long"
+        }
+      ]
+    },
+    {
+      "Name": "Customer",
       "Properties": [
         {
           "Name": "Id",
@@ -33,65 +82,15 @@
         },
         {
           "Name": "Name",
+          "Type": "string"
+        },
+        {
+          "Name": "Cellphone",
           "Type": "string"
         },
         {
           "Name": "Email",
           "Type": "string"
-        }
-      ]
-    },
-    {
-      "Name": "UserProfile",
-      "Properties": [
-        {
-          "Name": "Id",
-          "Type": "long",
-          "PrimaryKey": true
-        },
-        {
-          "Name": "Address",
-          "Type": "string"
-        },
-        {
-          "Name": "PhoneNumber",
-          "Type": "string"
-        },
-        {
-          "Name": "UserId",
-          "Type": "long"
-        }
-      ]
-    },
-    {
-      "Name": "Role",
-      "Properties": [
-        {
-          "Name": "Id",
-          "Type": "long",
-          "PrimaryKey": true
-        },
-        {
-          "Name": "Name",
-          "Type": "string"
-        }
-      ]
-    },
-    {
-      "Name": "UserRole",
-      "Properties": [
-        {
-          "Name": "Id",
-          "Type": "long",
-          "PrimaryKey": true
-        },
-        {
-          "Name": "UserId",
-          "Type": "long"
-        },
-        {
-          "Name": "RoleId",
-          "Type": "long"
         }
       ]
     }

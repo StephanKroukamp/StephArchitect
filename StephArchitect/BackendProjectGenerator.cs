@@ -5,7 +5,7 @@ using DiffMatchPatch;
 
 namespace StephArchitect;
 
-public class ProjectGenerator(string projectName, string baseOutputPath, string jsonFilePath)
+public class BackendProjectGenerator(string projectName, string baseOutputPath, string jsonFilePath)
 {
     private readonly string _templateDirectory = SetTemplateDirectory();
 
@@ -28,7 +28,7 @@ public class ProjectGenerator(string projectName, string baseOutputPath, string 
 
         CreateBaseDirectoryStructure();
 
-        await Task.WhenAll([
+        await Task.WhenAll(
             GenerateDomainLayer(),
             GenerateContractsLayer(),
             GenerateApplicationLayer(),
@@ -38,8 +38,7 @@ public class ProjectGenerator(string projectName, string baseOutputPath, string 
             GenerateProgramFile(),
             GenerateSolutionFile(),
             GenerateGlobalJsonFile(),
-            GenerateReadmeFile()
-        ]);
+            GenerateReadmeFile());
 
         Manifest ??= new Manifest
         {
@@ -169,7 +168,7 @@ public class ProjectGenerator(string projectName, string baseOutputPath, string 
 
     private static string SetTemplateDirectory() =>
         Path.Combine(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)!
-            .Parent!.Parent!.Parent!.FullName, "Templates");
+            .Parent!.Parent!.Parent!.FullName, "Templates", "Api");
 
     private async Task GenerateApplicationLayer()
     {
