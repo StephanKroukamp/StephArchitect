@@ -1,4 +1,5 @@
 ﻿{
+  "ProjectName": "Bruno",
   "Relationships": [
     {
       "Type": "OneToMany",

@@ -1,20 +1,23 @@
-﻿using StephArchitect;
-
-var projectName = "Bruno";
+﻿using Newtonsoft.Json;
+using StephArchitect;
 
 // steph - mac
-// var baseOutputPath = $"/Users/stephankroukamp/RiderProjects/{projectName}";
-// var inputFilePath = "/Users/stephankroukamp/RiderProjects/StephArchitect/StephArchitect/Input/example.json";
+var inputFilePath = "/Users/stephankroukamp/RiderProjects/StephArchitect/StephArchitect/Input/example.json";
 
 // Danie
-var baseOutputPath = $"../../Output/{projectName}";
-var inputFilePath = "Input/example.json";
+// var baseOutputPath = $"../../Output/{projectName}";
+// var inputFilePath = "Input/example.json";
 
 // steph - windows
 // var baseOutputPath = @$"C:\\Projects\\{projectName}\\Api";
 // var inputFilePath = @"C:\\Projects\\StephArchitect\\StephArchitect\\Input\\example.json";
 
-var apiGenerator = new ApiProjectGenerator(projectName, $"{baseOutputPath}-API", inputFilePath);
+var jsonContent = await File.ReadAllTextAsync(inputFilePath);
+
+var input = JsonConvert.DeserializeObject<Input>(jsonContent) ??
+            throw new Exception("No entities found in input.");
+
+var apiGenerator = new ApiProjectGenerator($"/Users/stephankroukamp/RiderProjects/{input.ProjectName}-API", input);
 await apiGenerator.GenerateFromInput();
 
 // var mobileGenerator = new MobileProjectGenerator(projectName, $"{StringExtensions.ToSnakeCase(baseOutputPath)}-mobile", inputFilePath);
