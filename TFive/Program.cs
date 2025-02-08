@@ -8,7 +8,11 @@ var jsonContent = await File.ReadAllTextAsync(inputFilePath);
 var input = JsonConvert.DeserializeObject<Input>(jsonContent) ??
             throw new Exception("No entities found in input.");
 
-var baseOutputPath = $"../../../../../{input.ProjectName}";
+// Danie
+// var baseOutputPath = $"../../../../../{input.ProjectName}";
+
+// Steph
+var baseOutputPath = $"/Users/stephankroukamp/RiderProjects/{input.ProjectName}";
 
 // C# Backend Api
 var apiGenerator = new ApiProjectGenerator(Path.Join(baseOutputPath, $"{StringExtensions.ToSnakeCase(input.ProjectName)}-api"), input);
