@@ -1,0 +1,40 @@
+<#@ template language="C#" #>
+<#@ output extension=".dart" #>
+<#@ assembly name="StephArchitect" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="StephArchitect" #>
+<#@ parameter name="ProjectName" type="System.String" #>
+<#@ parameter name="SnakeCaseEntityName" type="System.String" #>
+<#@ parameter name="Entity" type="StephArchitect.Entity" #>
+<#@ parameter name="Relationships" type="List<StephArchitect.Relationship>" #>
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part '<#= SnakeCaseEntityName #>.freezed.dart';
+part '<#= SnakeCaseEntityName #>.g.dart';
+
+@freezed
+class <#= Entity.Name #> with _$<#= Entity.Name #>{
+  factory <#= Entity.Name #>({
+<#
+foreach (var prop in Entity.Properties)
+{
+  if (prop.PrimaryKey) 
+  {
+#>
+    <#= StringExtensions.ToDartType(prop.Type) #>? <#= StringExtensions.ToCamelCase(prop.Name) #>,
+<#
+  } 
+  else 
+  {
+#>
+    required <#= StringExtensions.ToDartType(prop.Type) #> <#= StringExtensions.ToCamelCase(prop.Name) #>,
+<#
+  }
+}
+#>
+  }) = _<#= Entity.Name #>;
+
+  factory <#= Entity.Name #>.fromJson(Map<String, Object?> json) => _$<#= Entity.Name #>FromJson(json);
+}

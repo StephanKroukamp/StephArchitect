@@ -1,20 +1,23 @@
-﻿using StephArchitect;
+using Newtonsoft.Json;
+using StephArchitect;
 
-var projectName = "Bruno";
+const string inputFilePath = "/Users/stephankroukamp/RiderProjects/StephArchitect/StephArchitect/Input/example.json";
 
-// mac
-var baseOutputPath = $"/Users/joanitanell/Documents/GitHub/{projectName}";
-var inputFilePath = "/Users/joanitanell/Documents/GitHub/StephArchitect/StephArchitect/Input/example.json";
+var jsonContent = await File.ReadAllTextAsync(inputFilePath);
 
-// windows
-// var baseOutputPath = @$"C:\\Projects\\{projectName}\\Api";
-// var inputFilePath = @"C:\\Projects\\StephArchitect\\StephArchitect\\Input\\example.json";
+var input = JsonConvert.DeserializeObject<Input>(jsonContent) ??
+            throw new Exception("No entities found in input.");
 
-// var apiGenerator = new ApiProjectGenerator(projectName, $"{baseOutputPath}-API", inputFilePath);
-// await apiGenerator.GenerateFromInput();
+var baseOutputPath = $"/Users/stephankroukamp/RiderProjects/{input.ProjectName}";
 
-var frontendGenerator = new FrontendProjectGenerator(projectName, baseOutputPath, inputFilePath);
+// C# Backend Api
+var apiGenerator = new ApiProjectGenerator(Path.Join(baseOutputPath, $"{StringExtensions.ToSnakeCase(input.ProjectName)}-api"), input);
+await apiGenerator.GenerateFromInput();
+
+// Flutter mobile Frontend
+var mobileGenerator = new MobileProjectGenerator(input.ProjectName, Path.Join(baseOutputPath, $"{StringExtensions.ToSnakeCase(input.ProjectName)}-mobile"), inputFilePath);
+await mobileGenerator.GenerateFromInput();
+
+// // Angular web Frontend
+var frontendGenerator = new FrontendProjectGenerator(input.ProjectName, Path.Join(baseOutputPath, $"{StringExtensions.ToSnakeCase(input.ProjectName)}-web"), inputFilePath);
 await frontendGenerator.GenerateFromInput();
-
-// var mobileGenerator = new MobileProjectGenerator(projectName, $"{StringExtensions.ToSnakeCase(baseOutputPath)}-mobile", inputFilePath);
-// await mobileGenerator.GenerateFromInput();
