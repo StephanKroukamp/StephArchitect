@@ -2,14 +2,15 @@
 
 var projectName = "Bruno";
 
-// mac
-//var baseOutputPath = $"/Users/stephankroukamp/RiderProjects/{projectName}";
-//var inputFilePath = "/Users/stephankroukamp/RiderProjects/StephArchitect/StephArchitect/Input/example.json";
+// steph - mac
+// var baseOutputPath = $"/Users/stephankroukamp/RiderProjects/{projectName}";
+// var inputFilePath = "/Users/stephankroukamp/RiderProjects/StephArchitect/StephArchitect/Input/example.json";
 
+// Danie
 var baseOutputPath = $"../../Output/{projectName}";
 var inputFilePath = "Input/example.json";
 
-// windows
+// steph - windows
 // var baseOutputPath = @$"C:\\Projects\\{projectName}\\Api";
 // var inputFilePath = @"C:\\Projects\\StephArchitect\\StephArchitect\\Input\\example.json";
 
