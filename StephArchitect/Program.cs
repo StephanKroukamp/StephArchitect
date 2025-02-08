@@ -4,6 +4,9 @@ using System.IO;
 var projectName = "Bruno";
 
 // mac
+//var baseOutputPath = $"/Users/stephankroukamp/RiderProjects/{projectName}";
+//var inputFilePath = "/Users/stephankroukamp/RiderProjects/StephArchitect/StephArchitect/Input/example.json";
+
 var baseOutputPath = $"../../Output/{projectName}";
 var inputFilePath = "Input/example.json";
 
