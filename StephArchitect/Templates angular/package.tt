@@ -1,7 +1,7 @@
 ﻿<#@ output extension=".json" #>
 <#@ parameter name="ProjectName" type="System.String" #>
 {
-  "name": "ProjectName",
+  "name": "<#= ProjectName #>",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
