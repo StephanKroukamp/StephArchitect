@@ -10,6 +10,6 @@ var inputFilePath = "/Users/stephankroukamp/RiderProjects/StephArchitect/StephAr
 // var baseOutputPath = @$"C:\\Projects\\{projectName}\\Api";
 // var inputFilePath = @"C:\\Projects\\StephArchitect\\StephArchitect\\Input\\example.json";
 
-var generator = new BackendProjectGenerator(projectName, baseOutputPath, inputFilePath);
+var generator = new ApiProjectGenerator(projectName, baseOutputPath, inputFilePath);
 
 await generator.GenerateFromInput();

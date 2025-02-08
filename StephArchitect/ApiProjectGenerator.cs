@@ -5,7 +5,7 @@ using DiffMatchPatch;
 
 namespace StephArchitect;
 
-public class BackendProjectGenerator(string projectName, string baseOutputPath, string jsonFilePath)
+public class ApiProjectGenerator(string projectName, string baseOutputPath, string jsonFilePath)
 {
     private readonly string _templateDirectory = SetTemplateDirectory();
 
