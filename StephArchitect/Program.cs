@@ -1,30 +1,23 @@
 using Newtonsoft.Json;
 using StephArchitect;
-using System.IO;
 
-// steph - mac
-var inputFilePath = "/Users/stephankroukamp/RiderProjects/StephArchitect/StephArchitect/Input/example.json";
+const string inputFilePath = "/Users/stephankroukamp/RiderProjects/StephArchitect/StephArchitect/Input/example.json";
 
-// mac
-//var baseOutputPath = $"/Users/stephankroukamp/RiderProjects/{projectName}";
-//var inputFilePath = "/Users/stephankroukamp/RiderProjects/StephArchitect/StephArchitect/Input/example.json";
+var jsonContent = await File.ReadAllTextAsync(inputFilePath);
 
-var baseOutputPath = $"../../Output/{projectName}";
-var inputFilePath = "Input/example.json";
+var input = JsonConvert.DeserializeObject<Input>(jsonContent) ??
+            throw new Exception("No entities found in input.");
 
-// windows
-// var baseOutputPath = @$"C:\\Projects\\{projectName}\\Api";
-// var inputFilePath = @"C:\\Projects\\StephArchitect\\StephArchitect\\Input\\example.json";
+var baseOutputPath = $"/Users/stephankroukamp/RiderProjects/{input.ProjectName}";
 
-var apiGenerator = new ApiProjectGenerator(projectName, $"{baseOutputPath}-API", inputFilePath);
+// C# Backend Api
+var apiGenerator = new ApiProjectGenerator(Path.Join(baseOutputPath, $"{StringExtensions.ToSnakeCase(input.ProjectName)}-api"), input);
 await apiGenerator.GenerateFromInput();
 
 // Flutter mobile Frontend
 var mobileGenerator = new MobileProjectGenerator(input.ProjectName, Path.Join(baseOutputPath, $"{StringExtensions.ToSnakeCase(input.ProjectName)}-mobile"), inputFilePath);
 await mobileGenerator.GenerateFromInput();
 
-var baseOutputPath = $"/Users/joanitanell/Documents/GitHub/{projectName}";
-var inputFilePath = "/Users/joanitanell/Documents/GitHub/StephArchitect/StephArchitect/Input/example.json";
-
-var frontendGenerator = new FrontendProjectGenerator(projectName, baseOutputPath, inputFilePath);
+// // Angular web Frontend
+var frontendGenerator = new FrontendProjectGenerator(input.ProjectName, Path.Join(baseOutputPath, $"{StringExtensions.ToSnakeCase(input.ProjectName)}-web"), inputFilePath);
 await frontendGenerator.GenerateFromInput();
