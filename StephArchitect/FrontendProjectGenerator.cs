@@ -106,28 +106,12 @@ public class FrontendProjectGenerator(string projectName, string baseOutputPath,
             Path.Combine(baseOutputPath, "src"),
             Path.Combine(baseOutputPath, "src", "app"),
             Path.Combine(baseOutputPath, "src", "assets"),
+            Path.Combine(baseOutputPath, "src", "app", "shared"),
+            Path.Combine(baseOutputPath, "src", "app", "shared", "components"),
+            Path.Combine(baseOutputPath, "src", "app", "shared", "core", "interfaces"),
+            Path.Combine(baseOutputPath, "src", "app", "shared", "core", "repositories"),
+            Path.Combine(baseOutputPath, "src", "app", "shared", "core", "services")
         };
-
-        // TODO add entity components
-        // directories.AddRange(_entities.Select(entity =>
-        //     Path.Combine(baseOutputPath, $"{projectName}.Domain", entity.Name.Pluralize())));
-        //
-        // directories.AddRange(_entities.Select(entity =>
-        //     Path.Combine(baseOutputPath, $"{projectName}.Contracts", entity.Name.Pluralize())));
-        //
-        // directories.AddRange(_entities.Select(entity =>
-        //     Path.Combine(baseOutputPath, $"{projectName}.Application", entity.Name.Pluralize(), "Commands")));
-        // directories.AddRange(_entities.Select(entity =>
-        //     Path.Combine(baseOutputPath, $"{projectName}.Application", entity.Name.Pluralize(), "Queries")));
-        //
-        // directories.AddRange(_entities.Select(entity =>
-        //     Path.Combine(baseOutputPath, $"{projectName}.Infrastructure", entity.Name.Pluralize())));
-        //
-        // directories.AddRange(_entities.Select(entity =>
-        //     Path.Combine(baseOutputPath, $"{projectName}.Persistence", entity.Name.Pluralize())));
-        //
-        // directories.AddRange(_entities.Select(entity =>
-        //     Path.Combine(baseOutputPath, $"{projectName}.Api", entity.Name.Pluralize())));
 
         foreach (var dir in directories.Where(dir => !Directory.Exists(dir)))
         {
