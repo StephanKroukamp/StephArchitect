@@ -30,7 +30,8 @@ public class MobileProjectGenerator(string projectName, string baseOutputPath, s
 
         await Task.WhenAll(
             GeneratePubspecFile(),
-            GenerateModels());
+            GenerateModels(),
+            GenerateHtpServices());
 
         Manifest ??= new Manifest
         {
@@ -88,6 +89,7 @@ public class MobileProjectGenerator(string projectName, string baseOutputPath, s
             baseOutputPath,
             Path.Combine(baseOutputPath, $"lib"),
             Path.Combine(baseOutputPath, "lib", "models"),
+            Path.Combine(baseOutputPath, "lib", "services"),
         };
 
         foreach (var dir in directories.Where(dir => !Directory.Exists(dir)))
@@ -112,12 +114,25 @@ public class MobileProjectGenerator(string projectName, string baseOutputPath, s
                 Path.Combine(_templateDirectory, "lib", "models", "model.tt"),
                 Path.Combine(baseOutputPath, "lib", "models", $"{StringExtensions.ToSnakeCase(entity.Name)}.dart"),
                 new Dictionary<string, object>
-                    { 
+                    {
                         { "ProjectName", projectName },
                         { "SnakeCaseEntityName", StringExtensions.ToSnakeCase(entity.Name) },
-                        { "Entity", entity }, 
-                        { "Relationships", _relationships } 
+                        { "Entity", entity },
+                        { "Relationships", _relationships }
                     });
+        }
+    }
+
+    private async Task GenerateHtpServices()
+    {
+        foreach (var entity in _entities)
+        {
+            await GenerateTemplate(
+                Path.Combine(_templateDirectory, "lib", "services", "http_service.tt"),
+                Path.Combine(baseOutputPath, "lib", "services", $"http_{StringExtensions.ToSnakeCase(entity.Name)}_service.dart"),
+                new Dictionary<string, object>
+                    { { "ProjectName", projectName }, { "Entity", entity }, { "Relationships", _relationships } }
+                );
         }
     }
 

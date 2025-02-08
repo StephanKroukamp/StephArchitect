@@ -1,0 +1,85 @@
+<#@ template language="C#" #>
+<#@ output extension=".dart" #>
+<#@ assembly name="StephArchitect" #>
+<#@ import namespace="StephArchitect" #>
+<#@ parameter name="Entity" type="StephArchitect.Entity" #>
+import 'package:http/http.dart' as http;
+
+class Http<#= Entity.Name #>{
+
+  final String baseUrl;
+  final NetworkResponseHandler handler = NetworkResponseHandler();
+
+  Http<#= Entity.Name #>({
+    required this.baseUrl
+  });
+
+Future<Map<String, String>> getHeaders() async {
+    try {
+      return {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      };
+    }
+    catch (ex) {
+      return {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      };
+    }
+  }
+
+  Future<<#= Entity.Name #>> Get<#= Entity.Name.Pluralize() #>() async {
+    final url = '$baseUrl/<#= Entity.Name.Pluralize() #>';
+
+    final headers = await getHeaders();
+
+    final response = await http.get(Uri.parse(url), headers: headers);
+
+    return <#= Entity.Name #>.fromJson(jsonDecode(response.body))
+  }
+
+  Future<<#= Entity.Name #>> Get<#= Entity.Name #>ById(int id) async {
+    final url = '$baseUrl/<#= Entity.Name.Pluralize() #>/${id}';
+
+    final headers = await getHeaders();
+
+    final response = await http.get(Uri.parse(url), headers: headers);
+
+    return <#= Entity.Name #>.fromJson(jsonDecode(response.body))
+  }
+
+  Future<<#= Entity.Name #>> Update<#= Entity.Name #>(<#= Entity.Name #> request) async {
+    final url = '$baseUrl/<#= Entity.Name.Pluralize() #>/${request.id}';
+
+    final headers = await getHeaders();
+    
+    final body = request.toJson();
+
+    final response = await http.put(Uri.parse(url), body, headers: headers);
+
+    return <#= Entity.Name #>.fromJson(jsonDecode(response.body))
+  }
+
+  Future<<#= Entity.Name #>> Create<#= Entity.Name #>(<#= Entity.Name #> request) async {
+    final url = '$baseUrl/<#= Entity.Name.Pluralize() #>';
+
+    final headers = await getHeaders();
+
+    final body = request.toJson();
+
+    final response = await http.get(Uri.parse(url), body, headers: headers);
+
+    return <#= Entity.Name #>.fromJson(jsonDecode(response.body))
+  }
+
+  Future<<#= Entity.Name #>> Delete<#= Entity.Name #>(int id) async {
+    final url = '$baseUrl/<#= Entity.Name.Pluralize() #>/${id}';
+
+    final headers = await getHeaders();
+
+    final response = await http.delete(Uri.parse(url), headers: headers);
+
+    return <#= Entity.Name #>.fromJson(jsonDecode(response.body))
+  }
+}
