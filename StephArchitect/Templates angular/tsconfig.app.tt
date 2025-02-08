@@ -1,0 +1,8 @@
+﻿<#@ template language="C#" #>
+<#@ output extension=".json" #>
+<#@ parameter name="ProjectName" type="System.String" #>
+{
+  "sdk": {
+    "version": "9.0.100"
+  }
+}
