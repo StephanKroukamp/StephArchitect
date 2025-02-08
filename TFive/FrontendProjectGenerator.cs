@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Diagnostics;
+using System.Text.RegularExpressions;
 using Mono.TextTemplating;
 using Newtonsoft.Json;
 using DiffMatchPatch;
@@ -29,7 +30,8 @@ public class FrontendProjectGenerator(string projectName, string baseOutputPath,
         CreateBaseStructure();
 
         await Task.WhenAll(
-            GenerateBaseFiles()
+            GenerateBaseFiles(),
+            GenerateInterfaces()
             );
             // GenerateDomainLayer(),
             // GenerateContractsLayer(),
@@ -53,11 +55,6 @@ public class FrontendProjectGenerator(string projectName, string baseOutputPath,
             JsonConvert.SerializeObject(Manifest, Formatting.Indented));
 
         PrintGenerationSummary();
-
-        // DotnetCli.RestoreNugetPackages(baseOutputPath);
-
-        // DotnetCli.AddNewMigration(projectName, baseOutputPath);
-        // DotnetCli.ApplyMigration(projectName, baseOutputPath);
     }
 
     private async Task<Manifest?> LoadManifestFiles()
@@ -87,17 +84,6 @@ public class FrontendProjectGenerator(string projectName, string baseOutputPath,
             .ToLower();
     }
 
-    private async Task GenerateReadmeFile() =>
-        await GenerateTemplate(
-            Path.Combine(_templateDirectory, "ReadMe.tt"),
-            Path.Combine(baseOutputPath, "Readme.md"),
-            new Dictionary<string, object> { { "ProjectName", projectName } });
-
-    private Task GenerateGlobalJsonFile() =>
-        GenerateTemplate(
-            Path.Combine(_templateDirectory, "GlobalJson.tt"),
-            Path.Combine(baseOutputPath, "global.json"));
-
     private void CreateBaseStructure()
     {
         var directories = new List<string>
@@ -112,6 +98,11 @@ public class FrontendProjectGenerator(string projectName, string baseOutputPath,
             Path.Combine(baseOutputPath, "src", "app", "shared", "core", "repositories"),
             Path.Combine(baseOutputPath, "src", "app", "shared", "core", "services")
         };
+
+        foreach (var entity in _entities)
+        {
+            directories.Add(Path.Combine(baseOutputPath, "src", "app", "shared", "core", "interfaces", entity.Name.ToLower()));
+        }
 
         foreach (var dir in directories.Where(dir => !Directory.Exists(dir)))
         {
@@ -188,201 +179,82 @@ public class FrontendProjectGenerator(string projectName, string baseOutputPath,
             Path.Combine(baseOutputPath, "src", "app", "app.routes.ts"));
     }
 
-    private async Task GenerateDomainLayer()
+    private async Task GenerateInterfaces()
     {
-        await GenerateTemplate(
-            Path.Combine(_templateDirectory, "Domain", "IEntity.tt"),
-            Path.Combine(baseOutputPath, $"{projectName}.Domain", "IEntity.cs"),
-            new Dictionary<string, object> { { "ProjectName", projectName } });
-
         foreach (var entity in _entities)
         {
-            var path = Path.Combine(baseOutputPath, $"{projectName}.Domain", entity.Name.Pluralize());
-
-            await GenerateTemplate(
-                Path.Combine(_templateDirectory, "Domain", "Entity.tt"),
-                Path.Combine(path, $"{entity.Name}.cs"),
-                new Dictionary<string, object>
-                    { { "ProjectName", projectName }, { "Entity", entity }, { "Relationships", _relationships } });
+            await GenerateCreateCommand(entity);
+            await GenerateDeleteCommand(entity);
+            await GenerateUpdateCommand(entity);
+            await GenerateGetByIdCommand(entity);
+            await GenerateGetQuery(entity);
         }
-
-        await GenerateTemplate(
-            Path.Combine(_templateDirectory, "Domain", "CsProj.tt"),
-            Path.Combine(baseOutputPath, $"{projectName}.Domain", $"{projectName}.Domain.csproj"));
     }
 
-    private async Task GenerateContractsLayer()
+    private async Task GenerateCreateCommand(Entity entity)
     {
         await GenerateTemplate(
-            Path.Combine(_templateDirectory, "Contracts", "Csproj.tt"),
-            Path.Combine(baseOutputPath, $"{projectName}.Contracts", $"{projectName}.Contracts.csproj"));
+            Path.Combine(_templateDirectory, "src", "app", "shared", "core", "interfaces", "interface.tt"),
+            Path.Combine(baseOutputPath, "src", "app", "shared", "core", "interfaces", entity.Name.ToLower(), $"create-{entity.Name.ToLower()}-command.interface.ts"),
+            new Dictionary<string, object>
+            {
+                { "InterfaceName", $"Create{StringExtensions.ToTitleCase(entity.Name)}Command" },
+                { "InterfaceProperties", entity.Properties.Where(x => x.Name.ToLower() != "id" ).ToList() }
+            });
     }
-
+    
+    private async Task GenerateDeleteCommand(Entity entity)
+    {
+        await GenerateTemplate(
+            Path.Combine(_templateDirectory, "src", "app", "shared", "core", "interfaces", "interface.tt"),
+            Path.Combine(baseOutputPath, "src", "app", "shared", "core", "interfaces", entity.Name.ToLower(), $"delete-{entity.Name.ToLower()}-command.interface.ts"),
+            new Dictionary<string, object>
+            {
+                { "InterfaceName", $"Create{StringExtensions.ToTitleCase(entity.Name)}Command" },
+                { "InterfaceProperties", entity.Properties.Where(x => x.Name.ToLower() == "id" ).ToList() }
+            });
+    }
+    
+    private async Task GenerateUpdateCommand(Entity entity)
+    {
+        await GenerateTemplate(
+            Path.Combine(_templateDirectory, "src", "app", "shared", "core", "interfaces", "interface.tt"),
+            Path.Combine(baseOutputPath, "src", "app", "shared", "core", "interfaces", entity.Name.ToLower(), $"update-{entity.Name.ToLower()}-command.interface.ts"),
+            new Dictionary<string, object>
+            {
+                { "InterfaceName", $"Create{StringExtensions.ToTitleCase(entity.Name)}Command" },
+                { "InterfaceProperties", entity.Properties }
+            });
+    }
+    
+    private async Task GenerateGetByIdCommand(Entity entity)
+    {
+        await GenerateTemplate(
+            Path.Combine(_templateDirectory, "src", "app", "shared", "core", "interfaces", "interface.tt"),
+            Path.Combine(baseOutputPath, "src", "app", "shared", "core", "interfaces", entity.Name.ToLower(), $"get-{entity.Name.ToLower()}-by-id-query.interface.ts"),
+            new Dictionary<string, object>
+            {
+                { "InterfaceName", $"Create{StringExtensions.ToTitleCase(entity.Name)}Command" },
+                { "InterfaceProperties", entity.Properties }
+            });
+    }
+    
+    private async Task GenerateGetQuery(Entity entity)
+    {
+        await GenerateTemplate(
+            Path.Combine(_templateDirectory, "src", "app", "shared", "core", "interfaces", "interface.tt"),
+            Path.Combine(baseOutputPath, "src", "app", "shared", "core", "interfaces", entity.Name.ToLower(), $"get-{entity.Name.ToLower()}-query.interface.ts"),
+            new Dictionary<string, object>
+            {
+                { "InterfaceName", $"Create{StringExtensions.ToTitleCase(entity.Name)}Command" },
+                { "InterfaceProperties", entity.Properties }
+            });
+    }
+    
     private static string SetTemplateDirectory() =>
         Path.Combine(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)!
             .Parent!.Parent!.Parent!.FullName, "Templates", "Frontend");
-
-    private async Task GenerateApplicationLayer()
-    {
-        var path = Path.Combine(baseOutputPath, $"{projectName}.Application");
-
-        await GenerateTemplate(
-            Path.Combine(_templateDirectory, "Application", "IRepository.tt"),
-            Path.Combine(path, "IRepositoryTemplate.cs"),
-            new Dictionary<string, object> { { "ProjectName", projectName } });
-
-        foreach (var entity in _entities)
-        {
-            await GenerateTemplate(
-                Path.Combine(_templateDirectory, "Application", "IEntityRepository.tt"),
-                Path.Combine(path, entity.Name.Pluralize(), $"I{entity.Name}Repository.cs"),
-                new Dictionary<string, object> { { "ProjectName", projectName }, { "Entity", entity } });
-
-            await GenerateTemplate(
-                Path.Combine(_templateDirectory, "Application", "Commands", "CreateEntityCommand.tt"),
-                Path.Combine(path, entity.Name.Pluralize(), "Commands", $"Create{entity.Name}Command.cs"),
-                new Dictionary<string, object> { { "ProjectName", projectName }, { "Entity", entity } });
-
-            await GenerateTemplate(
-                Path.Combine(_templateDirectory, "Application", "Commands", "DeleteEntityByIdCommand.tt"),
-                Path.Combine(path, entity.Name.Pluralize(), "Commands", $"Delete{entity.Name}ByIdCommand.cs"),
-                new Dictionary<string, object> { { "ProjectName", projectName }, { "Entity", entity } });
-
-            await GenerateTemplate(
-                Path.Combine(_templateDirectory, "Application", "Commands", "UpdateEntityCommand.tt"),
-                Path.Combine(path, entity.Name.Pluralize(), "Commands", $"Update{entity.Name}Command.cs"),
-                new Dictionary<string, object> { { "ProjectName", projectName }, { "Entity", entity } });
-
-            await GenerateTemplate(
-                Path.Combine(_templateDirectory, "Application", "Queries", "GetEntitiesQuery.tt"),
-                Path.Combine(path, entity.Name.Pluralize(), "Queries", $"Get{entity.Name.Pluralize()}Query.cs"),
-                new Dictionary<string, object> { { "ProjectName", projectName }, { "Entity", entity } });
-
-            await GenerateTemplate(
-                Path.Combine(_templateDirectory, "Application", "Queries", "GetEntityByIdQuery.tt"),
-                Path.Combine(path, entity.Name.Pluralize(), "Queries", $"Get{entity.Name}ByIdQuery.cs"),
-                new Dictionary<string, object> { { "ProjectName", projectName }, { "Entity", entity } });
-        }
-
-        await GenerateTemplate(
-            Path.Combine(_templateDirectory, "Application", "Csproj.tt"),
-            Path.Combine(path, $"{projectName}.Application.csproj"),
-            new Dictionary<string, object> { { "ProjectName", projectName } });
-
-        await GenerateTemplate(
-            Path.Combine(_templateDirectory, "Application", "DependencyInjection.tt"),
-            Path.Combine(path, "DependencyInjection.cs"),
-            new Dictionary<string, object> { { "ProjectName", projectName } });
-    }
-
-    private async Task GenerateApiLayer()
-    {
-        var path = Path.Combine(baseOutputPath, $"{projectName}.Api");
-
-        await GenerateTemplate(
-            Path.Combine(_templateDirectory, "Api", "Csproj.tt"),
-            Path.Combine(baseOutputPath, $"{projectName}.Api", $"{projectName}.Api.csproj"),
-            new Dictionary<string, object> { { "ProjectName", projectName } });
-
-        foreach (var entity in _entities)
-        {
-            await GenerateTemplate(
-                Path.Combine(_templateDirectory, "Api", "EntityEndpoints.tt"),
-                Path.Combine(path, entity.Name.Pluralize(), $"{entity.Name}Endpoints.cs"),
-                new Dictionary<string, object>
-                {
-                    { "ProjectName", projectName }, { "EntityName", entity.Name },
-                    { "PluralEntityName", entity.Name.Pluralize() }
-                });
-        }
-
-        await GenerateTemplate(
-            Path.Combine(_templateDirectory, "Api", "Appsettings.tt"),
-            Path.Combine(path, "appsettings.json"),
-            new Dictionary<string, object> { { "ProjectName", projectName } });
-
-        await GenerateTemplate(
-            Path.Combine(_templateDirectory, "Api", "Appsettings.tt"),
-            Path.Combine(path, "appsettings.Development.json"),
-            new Dictionary<string, object> { { "ProjectName", projectName } });
-
-        await GenerateTemplate(
-            Path.Combine(_templateDirectory, "Api", "LaunchSettings.tt"),
-            Path.Combine(path, "Properties", "launchSettings.json"),
-            new Dictionary<string, object> { { "ProjectName", projectName } });
-    }
-
-    private async Task GeneratePersistenceLayer()
-    {
-        var path = Path.Combine(baseOutputPath, $"{projectName}.Persistence");
-
-        await GenerateTemplate(
-            Path.Combine(_templateDirectory, "Persistence", "Repository.tt"),
-            Path.Combine(path, "Repository.cs"),
-            new Dictionary<string, object> { { "ProjectName", projectName } });
-
-        foreach (var entity in _entities)
-        {
-            await GenerateTemplate(
-                Path.Combine(_templateDirectory, "Persistence", "EntityConfiguration.tt"),
-                Path.Combine(path, entity.Name.Pluralize(), $"{entity.Name}EntityConfiguration.cs"),
-                new Dictionary<string, object>
-                    { { "ProjectName", projectName }, { "Entity", entity }, { "Relationships", _relationships } });
-
-            await GenerateTemplate(
-                Path.Combine(_templateDirectory, "Persistence", "EntityRepository.tt"),
-                Path.Combine(path, entity.Name.Pluralize(), $"{entity.Name}Repository.cs"),
-                new Dictionary<string, object>
-                    { { "ProjectName", projectName }, { "Entity", entity } });
-        }
-
-        await GenerateTemplate(
-            Path.Combine(_templateDirectory, "Persistence", "Csproj.tt"),
-            Path.Combine(path, $"{projectName}.Persistence.csproj"),
-            new Dictionary<string, object> { { "ProjectName", projectName } });
-
-        await GenerateTemplate(
-            Path.Combine(_templateDirectory, "Persistence", "DbContext.tt"),
-            Path.Combine(path, $"{projectName}DbContext.cs"),
-            new Dictionary<string, object> { { "ProjectName", projectName } });
-
-        await GenerateTemplate(
-            Path.Combine(_templateDirectory, "Persistence", "DependencyInjection.tt"),
-            Path.Combine(path, "DependencyInjection.cs"),
-            new Dictionary<string, object> { { "ProjectName", projectName }, { "Entities", _entities } });
-    }
-
-    private async Task GenerateInfrastructureLayer()
-    {
-        var path = Path.Combine(baseOutputPath, $"{projectName}.Infrastructure");
-
-        await GenerateTemplate(
-            Path.Combine(_templateDirectory, "Infrastructure", "Csproj.tt"),
-            Path.Combine(path, $"{projectName}.Infrastructure.csproj"),
-            new Dictionary<string, object> { { "ProjectName", projectName } });
-
-        await GenerateTemplate(
-            Path.Combine(_templateDirectory, "Infrastructure", "DependencyInjection.tt"),
-            Path.Combine(path, "DependencyInjection.cs"),
-            new Dictionary<string, object> { { "ProjectName", projectName } });
-    }
-
-    private async Task GenerateProgramFile()
-    {
-        await GenerateTemplate(
-            Path.Combine(_templateDirectory, "Api", "Program.tt"),
-            Path.Combine(baseOutputPath, $"{projectName}.Api", "Program.cs"),
-            new Dictionary<string, object> { { "ProjectName", projectName }, { "Entities", _entities } });
-    }
-
-    private async Task GenerateSolutionFile()
-    {
-        await GenerateTemplate(
-            Path.Combine(_templateDirectory, "Solution.tt"),
-            Path.Combine(baseOutputPath, $"{projectName}.sln"),
-            new Dictionary<string, object> { { "ProjectName", projectName }, { "BaseOutputPath", baseOutputPath } });
-    }
-
+    
     private async Task GenerateTemplate(string templatePath, string outputPath,
         Dictionary<string, object>? sessionValues = null)
     {
