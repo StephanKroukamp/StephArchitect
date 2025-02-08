@@ -25,7 +25,5 @@ var baseOutputPath = $"/Users/stephankroukamp/RiderProjects/{input.ProjectName}-
 // await apiGenerator.GenerateFromInput();
 
 // Flutter mobile Frontend
-var outputPath = Path.Join(baseOutputPath, $"{StringExtensions.ToSnakeCase(input.ProjectName)}-mobile");
-
-var mobileGenerator = new MobileProjectGenerator(input.ProjectName, outputPath, inputFilePath);
+var mobileGenerator = new MobileProjectGenerator(input.ProjectName, Path.Join(baseOutputPath, $"{StringExtensions.ToSnakeCase(input.ProjectName)}-mobile"), inputFilePath);
 await mobileGenerator.GenerateFromInput();
