@@ -1,0 +1,30 @@
+<#@ template language="C#" #>
+<#@ output extension=".dart" #>
+
+
+// <#@ assembly name="StephArchitect" #>
+
+<#@ parameter name="ProjectName" type="System.String" #>
+<#@ parameter name="Entity" type="StephArchitect.Entity" #>
+<#@ parameter name="Relationships" type="List<StephArchitect.Relationship>" #>
+
+hello world
+// <@
+
+//   //var snakeCaseEntityName = StringExtensions.ToSnakeCase(Entity.Name);
+
+// >
+
+// import 'package:freezed_annotation/freezed_annotation.dart';
+
+// part 'model.freezed.dart';
+// part 'model.g.dart';
+
+// @freezed
+// class Model with _$Model{
+//   factory Model({
+    
+//   }) = _Model;
+
+//   factory Model.fromJson(Map<String, Object?> json) => _$ModelFromJson(json);
+// }
