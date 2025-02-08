@@ -1,0 +1,12 @@
+<#@ template language="C#" #>
+<#@ output extension=".sh" #>
+
+
+cd bruno-mobile
+flutter pub get
+dart run build_runner build
+
+cd ..
+
+cd bruno-web
+npm install

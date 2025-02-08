@@ -29,6 +29,7 @@ public class MobileProjectGenerator(string projectName, string baseOutputPath, s
         CreateBaseDirectoryStructure();
 
         await Task.WhenAll(
+            GenerateInstallScript(),
             GeneratePubspecFile(),
             GenerateModels(),
             GenerateHtpServices());
@@ -96,6 +97,13 @@ public class MobileProjectGenerator(string projectName, string baseOutputPath, s
         {
             Directory.CreateDirectory(dir);
         }
+    }
+
+    private async Task GenerateInstallScript()
+    {
+        await GenerateTemplate(
+            Path.Combine(_templateDirectory, "..", "install.tt"),
+            Path.Combine(baseOutputPath, "..", "install.sh"));
     }
 
     private async Task GeneratePubspecFile()
