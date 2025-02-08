@@ -10,7 +10,7 @@ var baseOutputPath = $"../../Output/{projectName}";
 var inputFilePath = "Input/example.json";
 
 // windows
-// var baseOutputPath = @$"C:\\Projects\\{projectName}";
+// var baseOutputPath = @$"C:\\Projects\\{projectName}\\Api";
 // var inputFilePath = @"C:\\Projects\\StephArchitect\\StephArchitect\\Input\\example.json";
 
 var generator = new ApiProjectGenerator(projectName, Path.Join(baseOutputPath, "API"), inputFilePath);
