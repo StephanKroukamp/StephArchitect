@@ -1,0 +1,37 @@
+﻿<#@ template language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="TFive" #>
+<#@ import namespace="TFive" #>
+<#@ import namespace="System.Linq" #>
+<#@ parameter name="ProjectName" type="System.String" #>
+<#@ parameter name="Entity" type="TFive.Entity" #>
+using MediatR;
+using AutoMapper;
+using <#= ProjectName #>.Domain.<#= Entity.Name.Pluralize() #>;
+
+namespace <#= ProjectName #>.Application.<#= Entity.Name.Pluralize() #>.Commands;
+
+public record Create<#= Entity.Name #>Command(<#= string.Join(", ", Entity.Properties.Where(p => !p.Name.Equals("Id")).Select(p => p.Type + " " + p.Name)) #>) : IRequest<<#= Entity.Name #>>;
+
+public class Create<#= Entity.Name #>CommandMappingProfile : Profile
+{
+    public Create<#= Entity.Name #>CommandMappingProfile()
+    {
+        CreateMap<Create<#= Entity.Name #>Command, <#= Entity.Name #>>()
+            .ForMember(dest => dest.Id, opt => opt.Ignore());
+    }
+}
+
+public class Create<#= Entity.Name #>CommandHandler(I<#= Entity.Name #>Repository <#= Entity.Name.ToLower() #>Repository, IMapper mapper) : IRequestHandler<Create<#= Entity.Name #>Command, <#= Entity.Name #>>
+{
+    public async Task<<#= Entity.Name #>> Handle(Create<#= Entity.Name #>Command request, CancellationToken cancellationToken)
+    {
+        var <#= Entity.Name.ToLower() #> = mapper.Map<<#= Entity.Name #>>(request);
+
+        <#= Entity.Name.ToLower() #>Repository.Add(<#= Entity.Name.ToLower() #>);
+
+        await <#= Entity.Name.ToLower() #>Repository.SaveChangesAsync(cancellationToken);
+
+        return <#= Entity.Name.ToLower() #>;
+    }
+}
