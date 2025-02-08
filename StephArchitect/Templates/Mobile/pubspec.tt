@@ -1,0 +1,25 @@
+<#@ template language="C#" #>
+<#@ output extension=".yaml" #>
+<#@ parameter name="ProjectName" type="System.String" #>
+
+name: {ProjectName}
+description: "{ProjectName} flutter library"
+
+version: 0.0.1
+homepage:
+
+environment:
+  sdk: ^3.6.1
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+
