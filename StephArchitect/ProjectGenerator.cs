@@ -28,7 +28,7 @@ public class ProjectGenerator(string projectName, string baseOutputPath, string 
 
         CreateBaseDirectoryStructure();
 
-        await Task.WhenAll([
+        await Task.WhenAll(
             GenerateDomainLayer(),
             GenerateContractsLayer(),
             GenerateApplicationLayer(),
@@ -38,8 +38,7 @@ public class ProjectGenerator(string projectName, string baseOutputPath, string 
             GenerateProgramFile(),
             GenerateSolutionFile(),
             GenerateGlobalJsonFile(),
-            GenerateReadmeFile()
-        ]);
+            GenerateReadmeFile());
 
         Manifest ??= new Manifest
         {
