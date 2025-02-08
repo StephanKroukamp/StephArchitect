@@ -1,14 +1,14 @@
 using Newtonsoft.Json;
 using StephArchitect;
 
-const string inputFilePath = "/Users/stephankroukamp/RiderProjects/StephArchitect/StephArchitect/Input/example.json";
+const string inputFilePath = "../../../Input/example.json";
 
 var jsonContent = await File.ReadAllTextAsync(inputFilePath);
 
 var input = JsonConvert.DeserializeObject<Input>(jsonContent) ??
             throw new Exception("No entities found in input.");
 
-var baseOutputPath = $"/Users/stephankroukamp/RiderProjects/{input.ProjectName}";
+var baseOutputPath = $"../../../../../{input.ProjectName}";
 
 // C# Backend Api
 var apiGenerator = new ApiProjectGenerator(Path.Join(baseOutputPath, $"{StringExtensions.ToSnakeCase(input.ProjectName)}-api"), input);
