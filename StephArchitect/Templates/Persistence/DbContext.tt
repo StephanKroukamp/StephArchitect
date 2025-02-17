@@ -21,7 +21,8 @@ public class <#= ProjectName #>DbContextFactory : IDesignTimeDbContextFactory<<#
 
         var optionsBuilder = new DbContextOptionsBuilder<<#= ProjectName #>DbContext>();
         
-        optionsBuilder.UseSqlServer(connectionString);
+        optionsBuilder.UseSqlServer(connectionString,
+            x => x.MigrationsHistoryTable("__EFMigrationsHistory", "<#=ProjectName#>"));
 
         return new <#= ProjectName #>DbContext(optionsBuilder.Options);
     }
@@ -29,7 +30,7 @@ public class <#= ProjectName #>DbContextFactory : IDesignTimeDbContextFactory<<#
 
 public class <#= ProjectName #>DbContext(DbContextOptions<<#= ProjectName #>DbContext> options) : DbContext(options)
 {
-    private const string Schema = "<#= ProjectName #>";
+    private const string Schema = "<#= ProjectName.ToLower() #>";
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

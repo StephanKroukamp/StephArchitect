@@ -57,7 +57,7 @@ public class ProjectGenerator(string projectName, string baseOutputPath, string 
         DotnetCli.RestoreNugetPackages(baseOutputPath);
 
         DotnetCli.AddNewMigration(projectName, baseOutputPath);
-        DotnetCli.ApplyMigration(projectName, baseOutputPath);
+        // DotnetCli.ApplyMigration(projectName, baseOutputPath);
     }
 
     private async Task<Manifest?> LoadManifestFiles()
