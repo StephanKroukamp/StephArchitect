@@ -22,7 +22,10 @@ public class <#= ProjectName #>DbContextFactory : IDesignTimeDbContextFactory<<#
         var optionsBuilder = new DbContextOptionsBuilder<<#= ProjectName #>DbContext>();
         
         optionsBuilder.UseSqlServer(connectionString,
-            x => x.MigrationsHistoryTable("__EFMigrationsHistory", "<#=ProjectName#>"));
+            x => x
+                .MigrationsHistoryTable("__EFMigrationsHistory", "<#=ProjectName.ToLower()#>")
+                .MigrationsAssembly(typeof(<#= ProjectName #>DbContext).Assembly.FullName));
+
 
         return new <#= ProjectName #>DbContext(optionsBuilder.Options);
     }

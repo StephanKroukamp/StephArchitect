@@ -10,12 +10,11 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 using Moq;
 using Respawn;
-using <#=ProjectName#>.Persistence;
+using <#= ProjectName #>.Persistence;
 
-namespace <#=ProjectName#>.Tests;
+namespace <#= ProjectName #>.Tests;
 
 [SetUpFixture]
 public class TestSetup
@@ -34,9 +33,7 @@ public class TestSetup
 
         _configuration = builder.Build();
 
-        var hostingEnvironment = Mock.Of<Microsoft.AspNetCore.Hosting.IWebHostEnvironment>(w =>
-            w.EnvironmentName == "Test" &&
-            w.ApplicationName == "<#=ProjectName#>.Api");
+        
 
         _configuration = builder.Build();
 
@@ -45,7 +42,30 @@ public class TestSetup
             {
                 webHostBuilder.ConfigureAppConfiguration((_, config) => { config.AddConfiguration(_configuration); });
 
-                webHostBuilder.ConfigureServices(services => { services.AddSingleton(hostingEnvironment); });
+                webHostBuilder.ConfigureServices(services => 
+                {
+                    var hostingEnvironment = Mock.Of<Microsoft.AspNetCore.Hosting.IWebHostEnvironment>(w =>
+                        w.EnvironmentName == "Test" &&
+                        w.ApplicationName == "<#= ProjectName #>.Api");
+
+                    services.AddSingleton(hostingEnvironment);
+
+                    var dbContextDescriptor = services.SingleOrDefault(
+                        d => d.ServiceType == typeof(DbContextOptions<<#= ProjectName #>DbContext>));
+                    services.Remove(dbContextDescriptor!);
+
+                    var ctx = services.SingleOrDefault(d => d.ServiceType == typeof(<#= ProjectName #>DbContext));
+                    services.Remove(ctx!);
+
+                    services.AddDbContext<<#= ProjectName #>DbContext>(opt =>
+                    {
+                        opt.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"),
+                            x => x
+                                .MigrationsHistoryTable("__EFMigrationsHistory", "<#= ProjectName.ToLower() #>")
+                                .MigrationsAssembly(typeof(<#= ProjectName #>DbContext).Assembly.FullName)
+                        );
+                    });
+                });
             });
 
         var serviceProvider = webApplicationFactory.Services;
@@ -74,25 +94,11 @@ public class TestSetup
         }
 
         using var scope = _scopeFactory.CreateScope();
+        
+        using var <#=ProjectName.ToLower()#>DbContext = scope.ServiceProvider.GetService<<#=ProjectName#>DbContext>()
+                                    ?? throw new Exception("DbContext not registered");
 
-        if (_configuration is null)
-        {
-            throw new Exception("Configuration is not registered");
-        }
-
-        var connectionString = _configuration.GetConnectionString("DefaultConnection");
-
-        var options = new DbContextOptionsBuilder<<#=ProjectName#>DbContext>()
-            .UseSqlServer(connectionString,
-                x => x.MigrationsHistoryTable("__EFMigrationsHistory", "<#=ProjectName#>"))
-            .Options;
-
-        using var <#=ProjectName.ToLower()#>DbContext = new <#=ProjectName#>DbContext(options);
-
-        if (<#=ProjectName.ToLower()#>DbContext.Database.GetPendingMigrations().Any())
-        {
-            <#=ProjectName.ToLower()#>DbContext.Database.Migrate();
-        }
+        <#=ProjectName.ToLower()#>DbContext.Database.EnsureCreated();
     }
 
     public static IServiceScope GetServiceScope()
