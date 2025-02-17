@@ -36,7 +36,6 @@ public class ProjectGenerator(string projectName, string baseOutputPath, string 
             GeneratePersistenceLayer(),
             GenerateInfrastructureLayer(),
             GenerateTestLayer(),
-            GenerateProgramFile(),
             GenerateSolutionFile(),
             GenerateGlobalJsonFile(),
             GenerateReadmeFile()
@@ -56,7 +55,7 @@ public class ProjectGenerator(string projectName, string baseOutputPath, string 
 
         DotnetCli.RestoreNugetPackages(baseOutputPath);
 
-        DotnetCli.AddNewMigration(projectName, baseOutputPath);
+        // DotnetCli.AddNewMigration(projectName, baseOutputPath);
         // DotnetCli.ApplyMigration(projectName, baseOutputPath);
     }
 
@@ -261,6 +260,11 @@ public class ProjectGenerator(string projectName, string baseOutputPath, string 
             Path.Combine(_templateDirectory, "Api", "LaunchSettings.tt"),
             Path.Combine(path, "Properties", "launchSettings.json"),
             new Dictionary<string, object> { { "ProjectName", projectName } });
+
+        await GenerateTemplate(
+            Path.Combine(_templateDirectory, "Api", "Program.tt"),
+            Path.Combine(baseOutputPath, $"{projectName}.Api", "Program.cs"),
+            new Dictionary<string, object> { { "ProjectName", projectName }, { "Entities", _entities } });
     }
 
     private async Task GeneratePersistenceLayer()
@@ -349,14 +353,6 @@ public class ProjectGenerator(string projectName, string baseOutputPath, string 
                 Path.Combine(path, $"{entity.Name}Tests.sc"),
                 new Dictionary<string, object> { { "ProjectName", projectName }, { "Entity", entity } });
         }
-    }
-
-    private async Task GenerateProgramFile()
-    {
-        await GenerateTemplate(
-            Path.Combine(_templateDirectory, "Api", "Program.tt"),
-            Path.Combine(baseOutputPath, $"{projectName}.Api", "Program.cs"),
-            new Dictionary<string, object> { { "ProjectName", projectName }, { "Entities", _entities } });
     }
 
     private async Task GenerateSolutionFile()
