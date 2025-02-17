@@ -3,6 +3,6 @@
 <#@ parameter name="ProjectName" type="System.String" #>
 {
   "sdk": {
-    "version": "9.0.100"
+    "version": "9.0.200"
   }
 }

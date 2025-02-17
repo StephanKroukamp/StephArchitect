@@ -7,8 +7,8 @@ var projectName = "Winkel";
 // var inputFilePath = "/Users/stephankroukamp/RiderProjects/StephArchitect/StephArchitect/Input/example.json";
 
 // windows
-var baseOutputPath = @$"C:\\Projects\\{projectName}";
-var inputFilePath = @"C:\\Projects\\StephArchitect\\StephArchitect\\Input\\example.json";
+var baseOutputPath = @$"C:\Users\StephanKroukamp\RiderProjects\{projectName}";
+var inputFilePath = @"C:\Users\StephanKroukamp\RiderProjects\StephArchitect\StephArchitect\Input\example.json";
 
 var generator = new ProjectGenerator(projectName, baseOutputPath, inputFilePath);
 
