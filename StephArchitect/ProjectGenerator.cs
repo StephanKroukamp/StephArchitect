@@ -35,6 +35,7 @@ public class ProjectGenerator(string projectName, string baseOutputPath, string 
             GenerateApiLayer(),
             GeneratePersistenceLayer(),
             GenerateInfrastructureLayer(),
+            GenerateTestLayer(),
             GenerateProgramFile(),
             GenerateSolutionFile(),
             GenerateGlobalJsonFile(),
@@ -108,6 +109,7 @@ public class ProjectGenerator(string projectName, string baseOutputPath, string 
             Path.Combine(baseOutputPath, $"{projectName}.Infrastructure"),
             Path.Combine(baseOutputPath, $"{projectName}.Persistence"),
             Path.Combine(baseOutputPath, $"{projectName}.Api"),
+            Path.Combine(baseOutputPath, $"{projectName}.Tests"),
             Path.Combine(baseOutputPath, $"{projectName}.Api", "Properties")
         };
 
@@ -314,6 +316,39 @@ public class ProjectGenerator(string projectName, string baseOutputPath, string 
             Path.Combine(_templateDirectory, "Infrastructure", "DependencyInjection.tt"),
             Path.Combine(path, "DependencyInjection.cs"),
             new Dictionary<string, object> { { "ProjectName", projectName } });
+    }
+
+    private async Task GenerateTestLayer()
+    {
+        var path = Path.Combine(baseOutputPath, $"{projectName}.Tests");
+
+        await GenerateTemplate(
+            Path.Combine(_templateDirectory, "Tests", "Csproj.tt"),
+            Path.Combine(path, $"{projectName}.Tests.csproj"),
+            new Dictionary<string, object> { { "ProjectName", projectName } });
+
+        await GenerateTemplate(
+            Path.Combine(_templateDirectory, "Tests", "TestSetup.tt"),
+            Path.Combine(path, "TestSetup.cs"),
+            new Dictionary<string, object> { { "ProjectName", projectName } });
+
+        await GenerateTemplate(
+            Path.Combine(_templateDirectory, "Tests", "TestBase.tt"),
+            Path.Combine(path, "TestBase.cs"),
+            new Dictionary<string, object> { { "ProjectName", projectName } });
+
+        await GenerateTemplate(
+            Path.Combine(_templateDirectory, "Tests", "Appsettings.tt"),
+            Path.Combine(path, "Appsettings.test.json"),
+            new Dictionary<string, object> { { "ProjectName", projectName } });
+
+        foreach (var entity in _entities.Where(x => x.Name == "User"))
+        {
+            await GenerateTemplate(
+                Path.Combine(_templateDirectory, "Tests", "EntityTests.tt"),
+                Path.Combine(path, $"{entity.Name}Tests.sc"),
+                new Dictionary<string, object> { { "ProjectName", projectName }, { "Entity", entity } });
+        }
     }
 
     private async Task GenerateProgramFile()

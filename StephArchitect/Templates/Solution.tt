@@ -11,6 +11,7 @@
     var infrastructureProjectPath = Path.Combine(BaseOutputPath, $"{ProjectName}.Infrastructure", $"{ProjectName}.Infrastructure.csproj");
     var persistenceProjectPath = Path.Combine(BaseOutputPath, $"{ProjectName}.Persistence", $"{ProjectName}.Persistence.csproj");
     var apiProjectPath = Path.Combine(BaseOutputPath, $"{ProjectName}.Api", $"{ProjectName}.Api.csproj");
+    var testsProjectPath = Path.Combine(BaseOutputPath, $"{ProjectName}.Tests", $"{ProjectName}.Tests.csproj");
  
     var domainGuid = Guid.NewGuid().ToString("B").ToUpper();
     var contractsGuid = Guid.NewGuid().ToString("B").ToUpper();
@@ -18,6 +19,7 @@
     var infrastructureGuid = Guid.NewGuid().ToString("B").ToUpper();
     var persistenceGuid = Guid.NewGuid().ToString("B").ToUpper();
     var apiGuid = Guid.NewGuid().ToString("B").ToUpper();
+    var testsGuid = Guid.NewGuid().ToString("B").ToUpper();
 #>
 Microsoft Visual Studio Solution File, Format Version 12.00
 
@@ -32,6 +34,8 @@ EndProject
 Project("<#= persistenceGuid #>") = "<#= ProjectName #>.Persistence", "<#= persistenceProjectPath.Replace("\\", "/") #>", "<#= persistenceGuid #>"
 EndProject
 Project("<#= apiGuid #>") = "<#= ProjectName #>.Api", "<#= apiProjectPath.Replace("\\", "/") #>", "<#= apiGuid #>"
+EndProject
+Project("<#= testsGuid #>") = "<#= ProjectName #>.Tests", "<#= testsProjectPath.Replace("\\", "/") #>", "<#= testsGuid #>"
 EndProject
 
 Global
@@ -70,5 +74,10 @@ Global
         <#= apiGuid #>.Debug|Any CPU.Build.0 = Debug|Any CPU
         <#= apiGuid #>.Release|Any CPU.ActiveCfg = Release|Any CPU
         <#= apiGuid #>.Release|Any CPU.Build.0 = Release|Any CPU
+
+        <#= testsGuid #>.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+        <#= testsGuid #>.Debug|Any CPU.Build.0 = Debug|Any CPU
+        <#= testsGuid #>.Release|Any CPU.ActiveCfg = Release|Any CPU
+        <#= testsGuid #>.Release|Any CPU.Build.0 = Release|Any CPU
     EndGlobalSection
 EndGlobal
