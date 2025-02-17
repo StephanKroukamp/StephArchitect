@@ -28,11 +28,10 @@ public static class DependencyInjection
     {
         var databaseConnectionString = configuration.GetConnectionString("DefaultConnection");
 
-        services.AddDbContext<<#= ProjectName #>DbContext>(opt =>
+        services.AddDbContext<<#=ProjectName#>DbContext>(opt =>
         {
-            opt.UseSqlServer(databaseConnectionString, m =>
-            {
-            });
+            opt.UseSqlServer(databaseConnectionString,
+                x => x.MigrationsHistoryTable("__EFMigrationsHistory", "<#= ProjectName #>"));
         });
 <#
     foreach (var entity in Entities)

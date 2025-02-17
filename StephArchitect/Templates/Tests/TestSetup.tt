@@ -1,0 +1,115 @@
+﻿<#@ template language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="StephArchitect" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="StephArchitect" #>
+<#@ parameter name="ProjectName" type="System.String" #>
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.VisualStudio.TestPlatform.TestHost;
+using Moq;
+using Respawn;
+using <#=ProjectName#>.Persistence;
+
+namespace <#=ProjectName#>.Tests;
+
+[SetUpFixture]
+public class TestSetup
+{
+    private static IConfiguration? _configuration;
+    private static IServiceScopeFactory? _scopeFactory;
+    private static Checkpoint? _checkpoint;
+
+    [OneTimeSetUp]
+    public void RunBeforeAnyTests()
+    {
+        var builder = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.test.json", false, true)
+            .AddEnvironmentVariables();
+
+        _configuration = builder.Build();
+
+        var hostingEnvironment = Mock.Of<Microsoft.AspNetCore.Hosting.IWebHostEnvironment>(w =>
+            w.EnvironmentName == "Test" &&
+            w.ApplicationName == "<#=ProjectName#>.Api");
+
+        _configuration = builder.Build();
+
+        var webApplicationFactory = new WebApplicationFactory<Program>()
+            .WithWebHostBuilder(webHostBuilder =>
+            {
+                webHostBuilder.ConfigureAppConfiguration((_, config) => { config.AddConfiguration(_configuration); });
+
+                webHostBuilder.ConfigureServices(services => { services.AddSingleton(hostingEnvironment); });
+            });
+
+        var serviceProvider = webApplicationFactory.Services;
+
+        _scopeFactory = serviceProvider.GetService<IServiceScopeFactory>();
+
+        EnsureProjectDatabase();
+
+        _checkpoint = new Checkpoint
+        {
+            // TablesToIgnore = new[] {
+            //     "__EFMigrationsHistory", nameof(User), nameof(LeadOrigin), nameof(LeadChannel),
+            //     nameof(LeadOriginChannel), nameof(LeadStatus), nameof(LeadStatusReasonLink), nameof(LookupValue),
+            //     nameof(StockColour), nameof(Flag), nameof(FlagReasonLink), nameof(Reason), nameof(DuplicateReason),
+            //     nameof(CommentType), nameof(AppSetting), nameof(LeadRelatedMarketValueRemovalReason),
+            //     nameof(UserQueue),
+            // }
+        };
+    }
+
+    private static void EnsureProjectDatabase()
+    {
+        if (_scopeFactory is null)
+        {
+            throw new Exception("Scope Factory is not registered");
+        }
+
+        using var scope = _scopeFactory.CreateScope();
+
+        if (_configuration is null)
+        {
+            throw new Exception("Configuration is not registered");
+        }
+
+        var connectionString = _configuration.GetConnectionString("DefaultConnection");
+
+        var options = new DbContextOptionsBuilder<<#=ProjectName#>DbContext>()
+            .UseSqlServer(connectionString,
+                x => x.MigrationsHistoryTable("__EFMigrationsHistory", "<#=ProjectName#>"))
+            .Options;
+
+        using var <#=ProjectName.ToLower()#>DbContext = new <#=ProjectName#>DbContext(options);
+
+        if (<#=ProjectName.ToLower()#>DbContext.Database.GetPendingMigrations().Any())
+        {
+            <#=ProjectName.ToLower()#>DbContext.Database.Migrate();
+        }
+    }
+
+    public static IServiceScope GetServiceScope()
+    {
+        return _scopeFactory!.CreateScope();
+    }
+
+    public static async Task ResetState()
+    {
+        if (_checkpoint is not null)
+        {
+            if (_configuration is null)
+            {
+                throw new InvalidOperationException("Configuration not setup correctly");
+            }
+
+            await _checkpoint.Reset(_configuration.GetConnectionString("DefaultConnection"));
+        }
+    }
+}

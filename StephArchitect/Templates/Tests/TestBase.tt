@@ -1,0 +1,40 @@
+﻿<#@ template language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="StephArchitect" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="StephArchitect" #>
+<#@ parameter name="ProjectName" type="System.String" #>
+using MediatR;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace <#=ProjectName#>.Tests
+{
+    public class TestBase
+    {
+        private IServiceScope Scope { get; set; }
+
+        [SetUp]
+        public async Task TestSetUp()
+        {
+            await TestSetup.ResetState();
+            Scope = TestSetup.GetServiceScope();
+        }
+
+        [TearDown]
+        public void TestTearDown()
+        {
+            Scope.Dispose();
+        }
+
+        protected async Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request)
+        {
+            var mediator = Scope.ServiceProvider.GetService<IMediator>() ??
+                           throw new InvalidOperationException("Mediator not registered");
+
+            return await mediator.Send(request);
+        }
+    }
+}

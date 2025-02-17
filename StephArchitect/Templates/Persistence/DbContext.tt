@@ -29,8 +29,12 @@ public class <#= ProjectName #>DbContextFactory : IDesignTimeDbContextFactory<<#
 
 public class <#= ProjectName #>DbContext(DbContextOptions<<#= ProjectName #>DbContext> options) : DbContext(options)
 {
+    private const string Schema = "<#= ProjectName #>";
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.HasDefaultSchema(Schema);
+
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(DependencyInjection).Assembly);
     }
 }

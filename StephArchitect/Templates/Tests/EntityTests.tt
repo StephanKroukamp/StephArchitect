@@ -1,0 +1,27 @@
+﻿<#@ template language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="StephArchitect" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="StephArchitect" #>
+<#@ parameter name="ProjectName" type="System.String" #>
+<#@ parameter name="Entity" type="StephArchitect.Entity" #>
+using <#=ProjectName#>.Application.Users.Commands;
+
+namespace <#=ProjectName#>.Tests;
+
+public class <#=Entity.Name#>Tests : TestBase
+{
+    [Test]
+    public async Task Should_Create_<#=Entity.Name#>()
+    {
+        // Arrange
+        var <#=Entity.Name.ToLower()#> = await SendAsync(new Create<#=Entity.Name#>Command("Stephan", "stephan.kroukamp@gmail.com"));
+        
+        // Act
+        
+        // Assert
+        Assert.Pass();
+    }
+}

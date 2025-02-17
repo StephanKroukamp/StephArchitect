@@ -1,0 +1,9 @@
+﻿<#@ template language="C#" #>
+<#@ output extension=".json" #>
+<#@ parameter name="ProjectName" type="System.String" #>
+{
+    "ConnectionStrings": {
+        "DefaultConnection": "Server=localhost;Database=<#=ProjectName#>_Tests;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True;"
+    },
+    "AllowedHosts": "*"
+}
