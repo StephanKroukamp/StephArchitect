@@ -346,8 +346,9 @@ public class ProjectGenerator(string projectName, string baseOutputPath, string 
             Path.Combine(path, "Appsettings.test.json"),
             new Dictionary<string, object> { { "ProjectName", projectName } });
 
-        foreach (var entity in _entities.Where(x => x.Name == "User"))
+        foreach (var entity in _entities)
         {
+            // TODO: implement proper child record generation if record has foreign key
             await GenerateTemplate(
                 Path.Combine(_templateDirectory, "Tests", "EntityTests.tt"),
                 Path.Combine(path, $"{entity.Name}Tests.sc"),
