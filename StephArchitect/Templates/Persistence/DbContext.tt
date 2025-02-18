@@ -26,7 +26,6 @@ public class <#= ProjectName #>DbContextFactory : IDesignTimeDbContextFactory<<#
                 .MigrationsHistoryTable("__EFMigrationsHistory", "<#=ProjectName.ToLower()#>")
                 .MigrationsAssembly(typeof(<#= ProjectName #>DbContext).Assembly.FullName));
 
-
         return new <#= ProjectName #>DbContext(optionsBuilder.Options);
     }
 }

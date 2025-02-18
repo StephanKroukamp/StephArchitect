@@ -7,21 +7,99 @@
 <#@ import namespace="StephArchitect" #>
 <#@ parameter name="ProjectName" type="System.String" #>
 <#@ parameter name="Entity" type="StephArchitect.Entity" #>
-using <#=ProjectName#>.Application.Users.Commands;
-
-namespace <#=ProjectName#>.Tests;
-
-public class <#=Entity.Name#>Tests : TestBase
-{
-    [Test]
-    public async Task Should_Create_<#=Entity.Name#>()
+<#
+    // Helper function to generate sample values for properties
+    string GetSampleValue(string type)
     {
-        // Arrange
-        var <#=Entity.Name.ToLower()#> = await SendAsync(new Create<#=Entity.Name#>Command("Stephan", "stephan.kroukamp@gmail.com"));
-        
-        // Act
-        
-        // Assert
-        Assert.Pass();
+        return type switch
+        {
+            "string" => "\"SampleValue\"",
+            "int" => "1",
+            "long" => "1L",
+            "bool" => "true",
+            "DateTime" => "DateTime.UtcNow",
+            _ => "default"
+        };
+    }
+
+    string GetUpdatedSampleValue(string type)
+    {
+        return type switch
+        {
+            "string" => "\"UpdatedValue\"",
+            "int" => "2",
+            "long" => "2L",
+            "bool" => "false",
+            "DateTime" => "DateTime.UtcNow.AddDays(1)",
+            _ => "default"
+        };
+    }
+#>
+using <#= ProjectName #>.Application.<#= Entity.Name.Pluralize() #>.Commands;
+using <#= ProjectName #>.Application.<#= Entity.Name.Pluralize() #>.Queries;
+
+namespace <#= ProjectName #>.Tests.<#= Entity.Name.Pluralize() #>
+{
+    public class <#= Entity.Name #>Tests : TestBase
+    {
+        [Test]
+        public async Task Should_Create_<#= Entity.Name #>()
+        {
+            // Arrange
+            var command = new Create<#= Entity.Name #>Command(<#= string.Join(", ", Entity.Properties.Where(p => !p.PrimaryKey).Select(p => GetSampleValue(p.Type))) #>);
+            
+            // Act
+            var result = await SendAsync(command);
+            
+            // Assert
+            Assert.NotNull(result);
+            Assert.Greater(result.Id, 0);
+        }
+
+        [Test]
+        public async Task Should_Get_<#= Entity.Name #>ById()
+        {
+            // Arrange
+            var command = new Create<#= Entity.Name #>Command(<#= string.Join(", ", Entity.Properties.Where(p => !p.PrimaryKey).Select(p => GetSampleValue(p.Type))) #>);
+            var created = await SendAsync(command);
+
+            // Act
+            var result = await SendAsync(new Get<#= Entity.Name #>ByIdQuery(created.Id));
+            
+            // Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(created.Id, result.Id);
+        }
+
+        [Test]
+        public async Task Should_Update_<#= Entity.Name #>()
+        {
+            // Arrange
+            var createCommand = new Create<#= Entity.Name #>Command(<#= string.Join(", ", Entity.Properties.Where(p => !p.PrimaryKey).Select(p => GetSampleValue(p.Type))) #>);
+            var created = await SendAsync(createCommand);
+            var updateCommand = new Update<#= Entity.Name #>Command(created.Id, <#= string.Join(", ", Entity.Properties.Where(p => !p.PrimaryKey).Select(p => GetUpdatedSampleValue(p.Type))) #>);
+            
+            // Act
+            var result = await SendAsync(updateCommand);
+            
+            // Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(created.Id, result.Id);
+        }
+
+        [Test]
+        public async Task Should_Delete_<#= Entity.Name #>()
+        {
+            // Arrange
+            var createCommand = new Create<#= Entity.Name #>Command(<#= string.Join(", ", Entity.Properties.Where(p => !p.PrimaryKey).Select(p => GetSampleValue(p.Type))) #>);
+            var created = await SendAsync(createCommand);
+            
+            // Act
+            await SendAsync(new Delete<#= Entity.Name #>ByIdCommand(created.Id));
+            var result = await SendAsync(new Get<#= Entity.Name #>ByIdQuery(created.Id));
+            
+            // Assert
+            Assert.Null(result);
+        }
     }
 }
