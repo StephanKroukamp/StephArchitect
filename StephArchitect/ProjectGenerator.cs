@@ -5,7 +5,12 @@ using DiffMatchPatch;
 
 namespace StephArchitect;
 
-public class ProjectGenerator(string projectName, string baseOutputPath, string jsonFilePath)
+public class ProjectGenerator(
+    string projectName,
+    string baseOutputPath,
+    string jsonFilePath,
+    string databaseConnectionString,
+    string testDatabaseConnectionString)
 {
     private readonly string _templateDirectory = SetTemplateDirectory();
 
@@ -249,12 +254,14 @@ public class ProjectGenerator(string projectName, string baseOutputPath, string 
         await GenerateTemplate(
             Path.Combine(_templateDirectory, "Api", "Appsettings.tt"),
             Path.Combine(path, "appsettings.json"),
-            new Dictionary<string, object> { { "ProjectName", projectName } });
+            new Dictionary<string, object>
+                { { "DatabaseConnectionString", databaseConnectionString } });
 
         await GenerateTemplate(
             Path.Combine(_templateDirectory, "Api", "Appsettings.tt"),
             Path.Combine(path, "appsettings.Development.json"),
-            new Dictionary<string, object> { { "ProjectName", projectName } });
+            new Dictionary<string, object>
+                { { "DatabaseConnectionString", databaseConnectionString } });
 
         await GenerateTemplate(
             Path.Combine(_templateDirectory, "Api", "LaunchSettings.tt"),
@@ -344,7 +351,8 @@ public class ProjectGenerator(string projectName, string baseOutputPath, string 
         await GenerateTemplate(
             Path.Combine(_templateDirectory, "Tests", "Appsettings.tt"),
             Path.Combine(path, "Appsettings.test.json"),
-            new Dictionary<string, object> { { "ProjectName", projectName } });
+            new Dictionary<string, object>
+                { { "DatabaseConnectionString", testDatabaseConnectionString } });
 
         foreach (var entity in _entities)
         {
